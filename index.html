@@ -190,7 +190,8 @@ try{lang=new URLSearchParams(location.search).get('lang')||localStorage.getItem(
 if(lang!=='ja')lang='en';
 const tr=v=>Array.isArray(v)?v[lang==='ja'?0:1]:v;
 const i18nLabels=[];
-function label(text,x,y,h,cls=''){const d=document.createElement('div');d.className='lbl '+cls;d.textContent=tr(text);if(Array.isArray(text))i18nLabels.push([d,text]);const o=new CSS2DObject(d);const [X,Z]=W(x,y);o.position.set(X,h,Z);scene.add(o);return o;}
+const occl=[]; // every 3D label/marker; hidden while something solid is in front of it
+function label(text,x,y,h,cls=''){const d=document.createElement('div');d.className='lbl '+cls;d.textContent=tr(text);if(Array.isArray(text))i18nLabels.push([d,text]);const o=new CSS2DObject(d);const [X,Z]=W(x,y);o.position.set(X,h,Z);scene.add(o);occl.push(o);return o;}
 
 function screenTex(title,sub,hue){const c=document.createElement('canvas');c.width=640;c.height=360;const g=c.getContext('2d');
   const gr=g.createLinearGradient(0,0,640,360);gr.addColorStop(0,`hsl(${hue},70%,28%)`);gr.addColorStop(1,`hsl(${hue+30},80%,55%)`);g.fillStyle=gr;g.fillRect(0,0,640,360);
@@ -520,7 +521,7 @@ const EQ=[
 ];
 const totalW=EQ.reduce((s,e)=>s+e.w*e.qty,0), maxW=Math.max(...EQ.map(e=>e.w*e.qty));
 const fmt=n=>n.toLocaleString('en-US');
-const pins={},occl=[];let sel=null; // occl: markers hidden when something solid is in front of them
+const pins={};let sel=null;
 EQ.forEach(e=>{if(!e.pos)return;const d=document.createElement('div');d.className='pin';d.innerHTML=`<span>${e.no}</span>`;
   d.onclick=ev=>{ev.stopPropagation();select(e.no,true);};const o=new CSS2DObject(d);const [X,Z]=W(...e.pos);o.position.set(X,e.pin,Z);scene.add(o);pins[e.no]=d;occl.push(o);});
 
@@ -555,7 +556,7 @@ const dimMat=new THREE.LineBasicMaterial({color:0xffd23f});
   const v=(a,b,c)=>new THREE.Vector3(a,b,c),t=.09;
   dimGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([v(X,0,Z),v(X,H,Z), v(X-t,H,Z),v(X+t,H,Z), v(X,H,Z-t),v(X,H,Z+t), v(X-t,0,Z),v(X+t,0,Z), v(X,0,Z-t),v(X,0,Z+t)]),dimMat));
   [[H,Math.PI],[0,0]].forEach(([y,r])=>{const c=new THREE.Mesh(new THREE.ConeGeometry(.03,.09,12),new THREE.MeshBasicMaterial({color:0xffd23f}));c.position.set(X,y+(r?-.045:.045),Z);c.rotation.x=r;dimGroup.add(c);});
-  const d=document.createElement('div');d.className='lbl dim';d.textContent='H 2700';const o=new CSS2DObject(d);o.position.set(X,H/2,Z);dimGroup.add(o);});
+  const d=document.createElement('div');d.className='lbl dim';d.textContent='H 2700';const o=new CSS2DObject(d);o.position.set(X,H/2,Z);dimGroup.add(o);occl.push(o);});
 // CSS2DRenderer only checks each label's own .visible, so toggle those too
 function showGroup(g,on){g.visible=on;g.traverse(o=>{if(o.isCSS2DObject){o.visible=on;o.element.style.display=on?'':'none';}});}
 const panel=document.getElementById('panel'),list=document.getElementById('eq-list');
@@ -610,7 +611,7 @@ tog('t-rot',v=>{controls.autoRotate=v;controls.autoRotateSpeed=0.8;});
 
 function resize(){const w=innerWidth,h=innerHeight;placePanel();renderer.setSize(w,h);composer.setSize(w,h);labelR.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
 addEventListener('resize',resize);resize();
-// marker occlusion: ray from the camera to each LAN tag / number pin; hide it if an opaque visible mesh is in between
+// label occlusion: ray from the camera to each label, LAN tag and number pin; hide it if an opaque visible mesh is in between
 const occluders=[];
 scene.traverse(o=>{if(!o.isMesh)return;for(let p=o;p;p=p.parent)if(!p.visible||p===lanGroup||p===dimGroup)return;
   const m=o.material;if(m.transparent||m.wireframe)return;occluders.push(o);});
