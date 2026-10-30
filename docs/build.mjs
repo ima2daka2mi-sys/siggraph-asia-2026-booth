@@ -51,7 +51,7 @@ const outlets = e => e.w ? e.qty : 0;
 const totalW = EQ.reduce((s, e) => s + e.w * e.qty, 0), totalOut = EQ.reduce((s, e) => s + outlets(e), 0);
 const lanPorts = LAN.reduce((s, l) => s + l.ports, 0);
 const PC = EQ.find(e => e.no === '+');
-const PC_AT = {L1: 2, L2: 2, L3: 3, L4: 3, L5: 1, L6: 1};
+const PC_AT = {L1: 2, L2: 2, L3: 3, L4: 3, L5: 1, L6: 1, L7: 1};
 if (Object.values(PC_AT).reduce((a, b) => a + b, 0) !== PC.qty) throw new Error(`PC_AT must add up to ${PC.qty} laptops`);
 const pcAt = Object.entries(PC_AT).map(([no, n]) => ({l: LAN.find(x => x.no === no), n}));
 
@@ -213,7 +213,7 @@ const DOCS = {
     <ul class="notes"><li>Extension cords and power strips are not permitted: each location needs its own outlets (guide: one outlet per device).</li>
       <li>Power figures are catalog estimates; final values will be updated once equipment is confirmed.</li>
       <li>The VR motion seat alone draws 220 VAC 9 A; a dedicated circuit is recommended.</li>
-      <li>Laptop outlets are placed at the LAN drops of the PCs they serve (one outlet per laptop). The presenter (L7) is not among the 12 laptops; confirm whether an outlet is needed there.</li>
+      <li>Laptop outlets are placed at the LAN drops of the PCs they serve (one outlet per laptop), including the presenter's laptop at L7.</li>
       <li>The VR360 Simulator alone draws 2,800 W (≈ 12.2 A at 230 V); a dedicated circuit is recommended.</li>
       <li>The plan page shows the power at each equipment position (red, W) and the laptop outlets (PC).</li></ul>${SOURCE}`},
 
