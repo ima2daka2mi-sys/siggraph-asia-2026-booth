@@ -41,6 +41,11 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .pin span{display:block;width:20px;height:20px;border-radius:50%;background:#6b3fa0;color:#fff;font:700 11px/20px var(--ui);text-align:center;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.55);transition:transform .15s,background .15s}
 .pin:hover span{transform:scale(1.15)}
 .pin.on span{background:var(--accent);transform:scale(1.35)}
+/* sign concept selector */
+.glab{font-size:12px;color:var(--muted);padding:6px 2px 6px 8px}
+select{font:inherit;font-size:12px;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:4px;padding:5px 6px;cursor:pointer}
+select option{background:#1b1d22;color:var(--fg)}
+#sign-desc{display:block;color:var(--fg);margin-bottom:4px}
 /* wired LAN tags and the 2700 height markers */
 .lan{pointer-events:auto;cursor:pointer}
 .occl{visibility:hidden}
@@ -99,6 +104,9 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
     <button id="t-dim" aria-pressed="false" data-en="Height 2.7 m" data-ja="高さ2.7m">Height 2.7 m</button>
     <button id="t-label" aria-pressed="true" data-en="Labels" data-ja="ラベル">Labels</button>
     <button id="t-rot" aria-pressed="false" data-en="Auto-rotate" data-ja="自動回転">Auto-rotate</button>
+  </div>
+  <div class="group" role="group" aria-label="Sign concept">
+    <label class="glab" for="sign-sel" data-en="Sign concept" data-ja="看板案">Sign concept</label><select id="sign-sel"></select>
   </div>
   <div class="group" role="group" aria-label="Language">
     <button id="l-en" aria-pressed="true" lang="en">EN</button>
@@ -360,127 +368,84 @@ function barRow(x1){const x2=x1+600,H1=1.0;
 barRow(4100);barRow(5350); // TV-side row set 200 back from the 85" monitor
 
 
-// ===== 看板案（天端 4990 ／ 行燈 H900 = 4090–4990）=====
-const SIGN_B=4.09, SIGN_H=0.9;
+// ===== sign concepts: H900 lanterns / logo builds, top 4950 (under the 5 m limit), all carried by the existing walls =====
+const SIGN_B=4.05, SIGN_H=0.9, SIGN_TOP=SIGN_B+SIGN_H;
 const signs={}, signLabels={};
 const steel=M(0x6b6e74,{metalness:.4,roughness:.45});
 function grp(k){const g=new THREE.Group();scene.add(g);signs[k]=g;signLabels[k]=[];return g;}
-function into(g,o){g.attach(o);return o;}
 function glabel(k,text,x,y,h,cls='k'){const o=label(text,x,y,h,cls);signLabels[k].push(o);return o;}
 // lit face texture (white acrylic face, dark lettering)
 function litTex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');
   const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#ffffff');gr.addColorStop(1,'#e9f1fb');g.fillStyle=gr;g.fillRect(0,0,w,h);
   g.textBaseline='middle';draw(g,w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;}
-const litMat=(t,side=THREE.FrontSide)=>new THREE.MeshStandardMaterial({map:t,emissive:0xffffff,emissiveMap:t,emissiveIntensity:.85,roughness:.5,side});
+const litMat=(t,side=THREE.FrontSide)=>new THREE.MeshStandardMaterial({map:t,emissive:0xffffff,emissiveMap:t,emissiveIntensity:.3,roughness:.5,side}); // kept low so bloom doesn't wash out the lettering
 function brand(g,x,y,size,align='left'){g.textAlign=align;g.fillStyle='#121316';g.font=`900 ${size}px "Noto Sans JP",sans-serif`;g.fillText('FORUM8',x,y);}
 function face(g0,cx,cy,nx,ny,w,h,z0,tex){const [X,Z]=W(cx,cy);const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),litMat(tex));
   p.position.set(X+nx*.006,z0+h/2,Z+ny*.006);p.rotation.y=Math.atan2(nx,ny);g0.add(p);return p;}
-function post(g0,x,y,from,to,s=100){return into(g0,box(x-s/2,y-s/2,x+s/2,y+s/2,from,to-from,steel));}
+// steel post standing on a wall top (plan point, from/to height in m, section in mm)
+function post(g0,x,y,from,to,s=120){const [X,Z]=W(x,y);const p=new THREE.Mesh(new THREE.BoxGeometry(s/1000,to-from,s/1000),steel);p.position.set(X,(from+to)/2,Z);p.castShadow=true;g0.add(p);return p;}
+const TAG='Real World Meets Interactive Technology';
 
-// 0) 現状：正面バナー（柱2本）
-{const g=grp('front');
- into(g,box(0,5800,200,6000,0,4.09,mat.wall));into(g,box(5800,5800,6000,6000,0,4.09,mat.wall));into(g,box(0,5800,6000,6000,4.09,.9,mat.wall));
- const c=document.createElement('canvas');c.width=2400;c.height=360;const x=c.getContext('2d');x.fillStyle='#111214';x.fillRect(0,0,2400,360);
- const gr=x.createLinearGradient(900,0,2400,0);gr.addColorStop(0,'rgba(63,143,224,0)');gr.addColorStop(1,'rgba(63,143,224,.55)');x.fillStyle=gr;x.fillRect(900,0,1500,360);
- x.fillStyle='#fff';x.font='900 170px "Noto Sans JP",sans-serif';x.textBaseline='middle';x.fillText('FORUM8',110,190);
- x.textAlign='right';x.font='900 92px "Noto Sans JP",sans-serif';x.fillText('Real World Meets',2310,140);x.fillText('Interactive Technology',2310,245);
- const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;
- const p=new THREE.Mesh(new THREE.PlaneGeometry(6,.9),new THREE.MeshStandardMaterial({map:t,roughness:.6}));const [X,Z]=W(3000,6002);p.position.set(X,4.54,Z);g.add(p);
- glabel('front','正面バナー 6000×900（天端 4990）',3000,6000,5.2,'');}
+// 1) Delta: three straight panels between posts on the STOCK corner, the F8VPS wall and the ForumSync wall
+{const g=grp('delta');const V=[[3050,1450],[1510,1382],[2925,4900]],th=200;
+ const cen=[(V[0][0]+V[1][0]+V[2][0])/3,(V[0][1]+V[1][1]+V[2][1])/3];
+ V.forEach(([x,y])=>post(g,x,y,2.7,SIGN_B,140));
+ for(let i=0;i<3;i++){const p1=V[i],p2=V[(i+1)%3];
+   const b=band(p1,p2,th,0,SIGN_B,SIGN_H,mat.wall);g.attach(scene.children[scene.children.length-1]);
+   let [nx,ny]=b.n;const mid=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2];
+   if((mid[0]-cen[0])*nx+(mid[1]-cen[1])*ny<0){nx=-nx;ny=-ny;}          // outer face points away from the centre
+   const L=Math.hypot(p2[0]-p1[0],p2[1]-p1[1])/1000,tw=Math.round(L*500);
+   const outT=litTex(tw,450,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,h-24,w,24);brand(x,w/2,h/2-12,Math.min(230,w*.2),'center');});
+   const inT=litTex(tw,450,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,0,w,24);x.textAlign='center';x.font=`700 ${Math.min(60,w*.042)}px "Noto Sans JP",sans-serif`;x.fillText(TAG,w/2,h/2+8);});
+   face(g,mid[0]+nx*th/2,mid[1]+ny*th/2,nx,ny,L,SIGN_H,SIGN_B,outT);face(g,mid[0]-nx*th/2,mid[1]-ny*th/2,-nx,-ny,L,SIGN_H,SIGN_B,inT);}
+ glabel('delta',['デルタ行燈 三角形 H900（天端4950）','Delta lantern, triangle H900 (top 4950)'],cen[0],cen[1],5.3);}
 
-// A) リング行燈 Ø3680 — 3点支持（STOCK角・F8VPS壁・ForumSync壁）
-{const g=grp('ring');const cx=2124,cy=3042,r=1.841;const [X,Z]=W(cx,cy);
- const tex=litTex(4096,320,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,0,w,14);x.fillRect(0,h-14,w,14);
-   for(let i=0;i<2;i++){const o=i*w/2;brand(x,o+80,h/2+6,170);x.fillStyle='#1f4e79';x.font='700 50px "Noto Sans JP",sans-serif';x.textAlign='left';x.fillText('Real World Meets Interactive Technology',o+900,h/2+6);}});
- tex.wrapS=THREE.RepeatWrapping;
- const outer=new THREE.Mesh(new THREE.CylinderGeometry(r,r,SIGN_H,160,1,true),litMat(tex));outer.position.set(X,SIGN_B+SIGN_H/2,Z);g.add(outer);
- const t2=tex.clone();t2.wrapS=THREE.RepeatWrapping;t2.repeat.x=-1;t2.needsUpdate=true;
- const inner=new THREE.Mesh(new THREE.CylinderGeometry(r-.2,r-.2,SIGN_H,160,1,true),litMat(t2,THREE.BackSide));inner.position.copy(outer.position);g.add(inner);
- [SIGN_B,SIGN_B+SIGN_H].forEach(y=>{const ring=new THREE.Mesh(new THREE.RingGeometry(r-.2,r+.005,160),new THREE.MeshStandardMaterial({color:0x111214,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.set(X,y,Z);g.add(ring);});
- [[3050,1450],[1451,1328],[2925,4700]].forEach(([x,y])=>post(g,x,y,2.7,SIGN_B+.05,120));
- glabel('ring','A リング行燈 Ø3680×H900',cx,cy,5.3);}
+// 2) Voxel logo: FORUM8 built from glowing cubes on a 3000×900 board, on three posts from the STOCK front wall
+{const g=grp('voxel');const y0=1450,[X,Z]=W(4500,y0);
+ [3150,4500,5850].forEach(x=>post(g,x,y0,2.7,SIGN_B,120));
+ const board=new THREE.Mesh(new THREE.BoxGeometry(3,SIGN_H,.05),M(0x111317,{roughness:.5}));board.position.set(X,SIGN_B+SIGN_H/2,Z);board.castShadow=true;g.add(board);
+ const tagT=litTex(1800,120,(x,w,h)=>{x.fillStyle='#0d2a47';x.fillRect(0,0,w,h);x.fillStyle='#cfe8ff';x.textAlign='center';x.font='700 56px "Noto Sans JP",sans-serif';x.fillText(TAG,w/2,h/2+2);});
+ const tag=new THREE.Mesh(new THREE.PlaneGeometry(2.9,.18),litMat(tagT));tag.position.set(X,SIGN_B+.14,Z+.027);g.add(tag);
+ const backT=litTex(1800,540,(x,w,h)=>brand(x,w/2,h/2,300,'center'));                       // back aisle sees a plain lit logo
+ const bp=new THREE.Mesh(new THREE.PlaneGeometry(2.9,.8),litMat(backT));bp.position.set(X,SIGN_B+SIGN_H/2,Z-.027);bp.rotation.y=Math.PI;g.add(bp);
+ const FONT={F:['11111','10000','10000','11110','10000','10000','10000'],O:['01110','10001','10001','10001','10001','10001','01110'],
+   R:['11110','10001','10001','11110','10100','10010','10001'],U:['10001','10001','10001','10001','10001','10001','01110'],
+   M:['10001','11011','10101','10101','10001','10001','10001'],'8':['01110','10001','10001','01110','10001','10001','01110']};
+ const c=.085,cols=35,x0=X-cols*c/2+c/2,ytop=SIGN_TOP-.04,pts=[];
+ [...'FORUM8'].forEach((ch,li)=>FONT[ch].forEach((row,r)=>[...row].forEach((b,ci)=>{if(b==='1')pts.push([li*6+ci,r]);})));
+ const vox=new THREE.InstancedMesh(new THREE.BoxGeometry(c*.88,c*.88,c*.88),M(0x000000,{emissive:0x4fd2ff,emissiveIntensity:2.2}),pts.length);
+ const m4=new THREE.Matrix4();pts.forEach(([ci,r],i)=>{m4.makeTranslation(x0+ci*c,ytop-r*c-c/2,Z+.025+c/2+((ci*7+r*3)%5)*.012);vox.setMatrixAt(i,m4);});
+ vox.castShadow=true;g.add(vox);
+ glabel('voxel',['ボクセル・ロゴ 3000×900（天端4950）','Voxel logo 3000×900 (top 4950)'],4500,y0,5.3);}
 
-// B) STOCK上キューブ行燈 ＋ ForumSyncタワー
-{const g=grp('cube');
- [[3050,50],[5950,50],[3050,1450],[5950,1450]].forEach(([x,y])=>post(g,x,y,2.7,SIGN_B,120));
- into(g,box(3000,0,6000,1500,SIGN_B,SIGN_H,mat.wall));
- const longT=litTex(2400,720,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,h-40,w,40);brand(x,w/2,h/2-30,330,'center');});
- const shortT=litTex(1200,720,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,h-40,w,40);brand(x,w/2,h/2-30,230,'center');});
- face(g,4500,1500,0,1,3,SIGN_H,SIGN_B,longT);face(g,4500,0,0,-1,3,SIGN_H,SIGN_B,longT);
- face(g,6000,750,1,0,1.5,SIGN_H,SIGN_B,shortT);face(g,3000,750,-1,0,1.5,SIGN_H,SIGN_B,shortT);
- // tower on ForumSync partition front (510×800, up to 4990)
- into(g,box(2670,5200,3180,6000,2.7,4.99-2.7,mat.wall));
- const towT=litTex(400,1800,(x,w,h)=>{x.save();x.translate(w/2,h/2);x.rotate(-Math.PI/2);brand(x,0,0,250,'center');x.restore();x.fillStyle='#1f4e79';x.fillRect(0,0,w,26);});
- const towS=litTex(560,1800,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,0,w,26);x.fillStyle='#1f4e79';x.font='900 78px "Noto Sans JP",sans-serif';x.textAlign='center';['Real','World','Meets','Interactive','Technology'].forEach((s,i)=>x.fillText(s,w/2,420+i*200));});
- face(g,2925,6000,0,1,.51,2.29,2.7,towT);face(g,3180,5600,1,0,.8,2.29,2.7,towS);face(g,2670,5600,-1,0,.8,2.29,2.7,towS);
- glabel('cube','B キューブ行燈 3000×1500×H900',4500,750,5.3);glabel('cube','B タワー 510×800（ForumSync壁を延長）',2925,5600,5.2);}
-
-// C) ツインブレード行燈 — 斜め壁2枚の上に、壁と同じ角度で浮かせる
-{const g=grp('blade');
- function blade(p1,p2,th,k){const b=band(p1,p2,th,0,SIGN_B,SIGN_H,mat.wall);g.attach(scene.children[scene.children.length-1]);
-   const L=Math.hypot(p2[0]-p1[0],p2[1]-p1[1])/1000;const mid=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2];const [nx,ny]=b.n;
-   const t=litTex(Math.round(L*600),540,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,0,26,h);x.fillRect(w-26,0,26,h);brand(x,w/2,h/2-40,Math.min(260,w*.19),'center');x.fillStyle='#1f4e79';x.font='700 40px "Noto Sans JP",sans-serif';x.fillText(k,w/2,h-80);});
-   face(g,mid[0]+nx*th/2,mid[1]+ny*th/2,nx,ny,L,SIGN_H,SIGN_B,t);face(g,mid[0]-nx*th/2,mid[1]-ny*th/2,-nx,-ny,L,SIGN_H,SIGN_B,t);
-   [.18,.82].forEach(s=>post(g,p1[0]+(p2[0]-p1[0])*s,p1[1]+(p2[1]-p1[1])*s,2.7,SIGN_B,140));}
- blade([180,170],[1750,1600],300,'Real World Meets Interactive Technology');
- blade([1770,2930],[3000,4160],300,'Digital Twin  ×  Simulation');
- glabel('blade','C ブレード行燈（F8VPS壁上）',965,885,5.3);glabel('blade','C ブレード行燈（ForumSync壁上）',2385,3545,5.3);}
-
-// ---- 多角形の行燈（共通：中心 2124,3042 ／ 3点支持）----
-const PC=[2124,3042];
-const P2=(r,deg)=>[PC[0]+r*Math.cos(deg*Math.PI/180),PC[1]+r*Math.sin(deg*Math.PI/180)];
-function capRing(g,outer,inner,y){const s=new THREE.Shape();outer.forEach((p,i)=>{const [X,Z]=W(...p);i?s.lineTo(X,-Z):s.moveTo(X,-Z);});
- const h=new THREE.Path();inner.forEach((p,i)=>{const [X,Z]=W(...p);i?h.lineTo(X,-Z):h.moveTo(X,-Z);});s.holes.push(h);
- const geo=new THREE.ExtrudeGeometry(s,{depth:.04,bevelEnabled:false});geo.rotateX(-Math.PI/2);geo.translate(0,y,0);const m=new THREE.Mesh(geo,steel);m.castShadow=true;g.add(m);}
-function supportPosts(g,pts){pts.forEach(([x,y])=>post(g,x,y,2.7,SIGN_B,120));}
-
-// D) 六角形行燈 — FORUM8のロゴマークに合わせた6面
-{const g=grp('hex');const n=6,R=1900,rot=0,D=200;
- const vO=[...Array(n)].map((_,i)=>P2(R,rot+i*60)),vI=[...Array(n)].map((_,i)=>P2(R-D/Math.cos(Math.PI/n),rot+i*60));
- const fw=2*R*Math.sin(Math.PI/n)/1000;
- const tLogo=litTex(1900,900,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,h-36,w,36);brand(x,w/2,h/2-20,330,'center');});
- const tTag=litTex(1900,900,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,h-36,w,36);x.textAlign='center';x.fillStyle='#1f4e79';x.font='900 120px "Noto Sans JP",sans-serif';x.fillText('Real World Meets',w/2,h/2-90);x.fillText('Interactive Technology',w/2,h/2+70);});
- for(let i=0;i<n;i++){const a=rot+i*60+30,nx=Math.cos(a*Math.PI/180),ny=Math.sin(a*Math.PI/180);const ro=R*Math.cos(Math.PI/n),ri=ro-D;
-   const [cx,cy]=P2(ro,a);face(g,cx,cy,nx,ny,fw,SIGN_H,SIGN_B,i%2?tTag:tLogo);
-   const [ix,iy]=P2(ri,a);face(g,ix,iy,-nx,-ny,fw*(ri/ro),SIGN_H,SIGN_B,i%2?tLogo:tTag);}
- capRing(g,vO,vI,SIGN_B-.04);capRing(g,vO,vI,SIGN_B+SIGN_H);
- supportPosts(g,[P2(1800,-60),P2(1660,-111),P2(1800,64)]);
- glabel('hex','D 六角形行燈 対角3800×H900',PC[0],PC[1],5.3);}
-
-// E) ポリゴン行燈 — 三角形パネルを交互に組んだ多面体リング（CGのポリゴンメッシュ）
-{const g=grp('poly');const n=9,R=1950;const yb=SIGN_B,yt=SIGN_B+SIGN_H;
- const T=[...Array(n)].map((_,i)=>P2(R,-90+i*360/n)),B=[...Array(n)].map((_,i)=>P2(R,-90+(i+.5)*360/n));
- const v=(p,y)=>{const [X,Z]=W(...p);return new THREE.Vector3(X,y,Z);};
- const cen=v(PC,(yb+yt)/2);
- const logoT=litTex(1024,1024,(x,w,h)=>{const gr=x.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#ffffff');gr.addColorStop(1,'#cfe3f7');x.fillStyle=gr;x.fillRect(0,0,w,h);brand(x,w/2,h*.27,190,'center');});
- const plainT=litTex(512,512,(x,w,h)=>{const gr=x.createLinearGradient(0,h,0,0);gr.addColorStop(0,'#3f8fe0');gr.addColorStop(1,'#1f4e79');x.fillStyle=gr;x.fillRect(0,0,w,h);});
- const tri=(a,b,c,top)=>{// a,b = wide edge, c = apex. UV: wide edge on the canvas top (top=true) or bottom
-   let A=a,Bv=b;const nrm=new THREE.Vector3().crossVectors(Bv.clone().sub(A),c.clone().sub(A));const mid=A.clone().add(Bv).add(c).multiplyScalar(1/3);
-   if(nrm.dot(mid.clone().sub(cen).setY(0))<0){[A,Bv]=[Bv,A];}
-   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([...A.toArray(),...Bv.toArray(),...c.toArray()],3));
-   const flipX=(A!==a);const ua=flipX?0:1,ub=flipX?1:0;
-   geo.setAttribute('uv',new THREE.Float32BufferAttribute(top?[ua,1,ub,1,.5,0]:[ua,0,ub,0,.5,1],2));geo.computeVertexNormals();return geo;};
- const edges=[];
- for(let i=0;i<n;i++){const j=(i+1)%n;
-   const down=tri(v(T[i],yt),v(T[j],yt),v(B[i],yb),true);  // 逆三角：上辺が広い → ロゴ
-   const up=tri(v(B[i],yb),v(B[j],yb),v(T[j],yt),false);    // 正三角：濃い青
-   const mDown=new THREE.Mesh(down,litMat(i%3===0?logoT:plainT));const mUp=new THREE.Mesh(up,litMat(plainT));
-   [mDown,mUp].forEach(m=>{m.castShadow=true;g.add(m);const back=new THREE.Mesh(m.geometry,new THREE.MeshStandardMaterial({color:0x2a5d8f,emissive:0x1f4e79,emissiveIntensity:.5,side:THREE.BackSide}));g.add(back);});
-   edges.push(v(T[i],yt),v(T[j],yt),v(B[i],yb),v(B[j],yb),v(T[i],yt),v(B[i],yb),v(T[j],yt),v(B[i],yb));}
- const eg=new THREE.BufferGeometry().setFromPoints(edges);g.add(new THREE.LineSegments(eg,new THREE.LineBasicMaterial({color:0x2b2d31})));
- supportPosts(g,[P2(1800,-60),P2(1660,-111),P2(1800,64)]);
- glabel('poly','ポリゴン行燈 Ø3900×H900（三角パネル18枚）',PC[0],PC[1],5.3);}
+// 3) Twin pylons: upright light columns on the STOCK corner and on the front end of the ForumSync wall
+{const g=grp('pylon');const h=SIGN_TOP-2.7;
+ function pylon(cx,cy,wx,wy){const [X,Z]=W(cx,cy);const body=new THREE.Mesh(new THREE.BoxGeometry(wx/1000,h,wy/1000),mat.wall);body.position.set(X,2.7+h/2,Z);body.castShadow=true;g.add(body);
+   const T=w=>litTex(Math.round(w*1000),1800,(x,W2,H2)=>{x.fillStyle='#1f4e79';x.fillRect(0,0,W2,30);x.fillRect(0,H2-30,W2,30);
+     x.save();x.translate(W2/2,H2/2);x.rotate(-Math.PI/2);brand(x,0,0,Math.min(300,W2*.55),'center');x.restore();});
+   const tx=T(wx/1000),ty=T(wy/1000);
+   face(g,cx,cy+wy/2,0,1,wx/1000,h,2.7,tx);face(g,cx,cy-wy/2,0,-1,wx/1000,h,2.7,tx);face(g,cx+wx/2,cy,1,0,wy/1000,h,2.7,ty);face(g,cx-wx/2,cy,-1,0,wy/1000,h,2.7,ty);}
+ pylon(3300,1200,600,600);  // on the STOCK front-left corner walls (inner side on a steel frame)
+ pylon(2925,5700,510,600);  // on the front end of the ForumSync wall (same 510 width)
+ glabel('pylon',['パイロン（STOCK角）600×600×H2250','Pylon on STOCK corner 600×600×H2250'],3300,1200,5.3);
+ glabel('pylon',['パイロン（ForumSync壁 正面端）510×600×H2250','Pylon on ForumSync wall end 510×600×H2250'],2925,5700,5.3);}
 
 const SPEC={
- front:'正面バナー 6000×900、柱2本で支持（現状案）',
- ring:'A リング行燈 Ø3680×H900。STOCK角・F8VPS壁・ForumSync壁の3点から支柱を立てて支持。四方の通路どこからでも同じに見えます',
- cube:'B STOCKの壁4隅から支柱を立てたキューブ行燈 3000×1500×H900 ＋ ForumSync壁の手前を4990まで延ばした光るタワー',
- hex:'D 六角形行燈。FORUM8のロゴマークに合わせた6面構成で、ロゴ面とタグライン面を交互に配置。3点支持',
- poly:'ポリゴン行燈。三角形パネル18枚を交互に組んだ多面体リング。CGのポリゴンメッシュを表現し、SIGGRAPHらしさを出す案',
- blade:'C 斜めの造作壁2枚の上に、壁と同じ角度でブレード行燈（両面発光）を浮かせる案。レイアウトの斜めのラインを強調します',
- none:'看板なし'};
-function showSign(k){Object.keys(signs).forEach(s=>{signs[s].visible=s===k;signLabels[s].forEach(l=>{l.visible=s===k;l.element.style.display=s===k?'':'none';});});
- document.querySelectorAll('[id^="s-"]').forEach(b=>b.setAttribute('aria-pressed',b.id==='s-'+k));document.getElementById('sign-desc').textContent=SPEC[k];}
+ delta:['デルタ行燈：STOCK角・F8VPS壁・ForumSync壁の3か所に立てた支柱を頂点に、直線パネル3枚で三角形を組む案。各パネルは支柱から支柱へ渡す梁になるので軽く、施工も簡単。外側3面にFORUM8ロゴ、内側にタグライン。H900、天端4950。',
+  'Delta lantern: three straight panels form a triangle whose corners sit on posts from the STOCK corner, the F8VPS wall and the ForumSync wall. Each panel spans post to post like a beam, so it is light and simple to build. FORUM8 logo on the three outer faces, tagline inside. H900, top 4950.'],
+ voxel:['ボクセル・ロゴ：光るキューブ（ボクセル）でFORUM8を立体的に組んだ3000×900の看板を、STOCK正面壁から支柱3本で掲げる案。CG／SIGGRAPHらしい見せ方で、下段にタグライン、裏面はロゴ。天端4950。',
+  'Voxel logo: FORUM8 built from glowing cubes on a 3000×900 board, raised on three posts from the STOCK front wall. A CG / SIGGRAPH-style look with the tagline along the bottom and a plain logo on the back. Top 4950.'],
+ pylon:['ツインパイロン：STOCKの角と、ForumSync壁の正面端の2か所に、各面にFORUM8を入れた縦型の光る柱（H2250）を載せる案。奥と手前の対角に置くので四方の通路から見え、既存の壁に載せるだけで支持が簡単。天端4950。',
+  'Twin pylons: two upright light columns (H2250) with FORUM8 on every face — one on the STOCK corner, one on the front end of the ForumSync wall. Set diagonally front and back, they read from all four aisles and simply sit on existing walls. Top 4950.'],
+ none:['','']};
+const SIGN_OPTS=[['none',['看板なし','No sign']],['delta',['① デルタ行燈（おすすめ）','1 Delta lantern (recommended)']],['voxel',['② ボクセル・ロゴ','2 Voxel logo']],['pylon',['③ ツインパイロン','3 Twin pylons']]];
+let signKey='none';
+function showSign(k){signKey=k;Object.keys(signs).forEach(s=>{signs[s].visible=s===k;signLabels[s].forEach(l=>{l.visible=s===k;l.element.style.display=s===k?'':'none';});});
+ const d=document.getElementById('sign-desc');d.hidden=k==='none';d.textContent=tr(SPEC[k]);
+ const sel=document.getElementById('sign-sel');if(sel)sel.value=k;
+ if(typeof buildOccluders==='function')buildOccluders();}
+function fillSignSel(){const sel=document.getElementById('sign-sel');sel.innerHTML=SIGN_OPTS.map(([k,n])=>`<option value="${k}">${tr(n)}</option>`).join('');sel.value=signKey;}
+document.getElementById('sign-sel').onchange=e=>{showSign(e.target.value);if(e.target.value!=='none')go('persp');};
 
 
 
@@ -597,7 +562,7 @@ function applyLang(l){lang=l;try{localStorage.setItem('booth-lang',l);}catch(e){
   document.querySelectorAll('[data-en]').forEach(el=>el.textContent=el.dataset[l]);
   i18nLabels.forEach(([d,t])=>d.textContent=tr(t));
   document.getElementById('l-en').setAttribute('aria-pressed',l==='en');document.getElementById('l-ja').setAttribute('aria-pressed',l==='ja');
-  renderPanel();placePanel();}
+  fillSignSel();showSign(signKey);renderPanel();placePanel();}
 document.getElementById('l-en').onclick=()=>applyLang('en');document.getElementById('l-ja').onclick=()=>applyLang('ja');
 applyLang(lang);
 camera.position.set(...views.persp[0]);controls.target.set(...views.persp[1]);
@@ -613,9 +578,10 @@ tog('t-rot',v=>{controls.autoRotate=v;controls.autoRotateSpeed=0.8;});
 function resize(){const w=innerWidth,h=innerHeight;placePanel();renderer.setSize(w,h);composer.setSize(w,h);labelR.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
 addEventListener('resize',resize);resize();
 // label occlusion: ray from the camera to each label, LAN tag and number pin; hide it if an opaque visible mesh is in between
-const occluders=[];
-scene.traverse(o=>{if(!o.isMesh)return;for(let p=o;p;p=p.parent)if(!p.visible||p===lanGroup||p===dimGroup)return;
-  const m=o.material;if(m.transparent||m.wireframe)return;occluders.push(o);});
+var occluders=[]; // var: showSign() rebuilds this before the line below runs
+function buildOccluders(){occluders=[];scene.traverse(o=>{if(!o.isMesh)return;for(let p=o;p;p=p.parent)if(!p.visible||p===lanGroup||p===dimGroup)return;
+  const m=o.material;if(m.transparent||m.wireframe)return;occluders.push(o);});}
+buildOccluders();
 const ray=new THREE.Raycaster(),_p=new THREE.Vector3(),_d=new THREE.Vector3();
 function updateOcclusion(){occl.forEach(o=>{o.getWorldPosition(_p);_d.subVectors(_p,camera.position);const dist=_d.length();
   ray.set(camera.position,_d.normalize());ray.far=Math.max(0,dist-.06);o.element.classList.toggle('occl',ray.intersectObjects(occluders,false).length>0);});}
