@@ -452,6 +452,11 @@ const F8_LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9EAAAE1CAYAAABQoxB
  const glow=(t,k)=>new THREE.MeshStandardMaterial({map:t||null,color:t?0xffffff:0xf8fbff,emissive:0xffffff,emissiveMap:t||null,emissiveIntensity:k,roughness:.6});
  const outM=new THREE.MeshStandardMaterial({map:outT,emissive:0xffffff,emissiveMap:emT,emissiveIntensity:.62,roughness:.6});
  const inM=glow(inT,.4),softM=glow(null,.55);
+ // light bleed around the panel edges (additive, independent of bloom), so the face reads as back-lit while the logo area stays clean
+ const hC=document.createElement('canvas');hC.width=1024;hC.height=256;{const x=hC.getContext('2d');x.shadowColor='#ffffff';x.shadowBlur=34;x.strokeStyle='rgba(255,255,255,.85)';x.lineWidth=6;
+   for(let k=0;k<3;k++)x.strokeRect(1024*.025,256*.105,1024*.95,256*.79);}
+ const haloT=new THREE.CanvasTexture(hC);haloT.colorSpace=THREE.SRGBColorSpace;
+ const haloM=new THREE.MeshBasicMaterial({map:haloT,transparent:true,opacity:.75,blending:THREE.AdditiveBlending,depthWrite:false});
  // one side: trapezoid section (outer face leans out at the top), extruded along the side; local x = outward, z = along the side
  const prof=new THREE.Shape();prof.moveTo(0,B+HB);prof.lineTo(-REC,B);prof.lineTo(-T,B);prof.lineTo(-T,B+HB);prof.closePath();
  [[3000,0,0,-1,6,6-2*T],[3000,6000,0,1,6,6-2*T],[0,3000,-1,0,6-2*T,6-2*T],[6000,3000,1,0,6-2*T,6-2*T]].forEach(([cx,cy,nx,ny,L,Li])=>{
@@ -460,6 +465,7 @@ const F8_LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9EAAAE1CAYAAABQoxB
    const m=new THREE.Mesh(geo,body);m.castShadow=true;s.add(m);
    const o=new THREE.Mesh(new THREE.PlaneGeometry(L,HB/Math.cos(TILT)),outM);              // sloped logo face
    o.position.set(-REC/2+.006,B+HB/2,0);o.rotation.set(0,Math.PI/2,-TILT,'ZYX');s.add(o);
+   const halo=new THREE.Mesh(new THREE.PlaneGeometry(L/.95,HB/Math.cos(TILT)/.79),haloM);halo.position.set(-REC/2+.012,B+HB/2,0);halo.rotation.copy(o.rotation);s.add(halo);
    const i=new THREE.Mesh(new THREE.PlaneGeometry(Li,HB),inM);i.position.set(-T-.006,B+HB/2,0);i.rotation.y=-Math.PI/2;s.add(i);
    const u=new THREE.Mesh(new THREE.PlaneGeometry(T-REC,L),softM);u.position.set(-(T+REC)/2,B-.004,0);u.rotation.x=Math.PI/2;s.add(u);});   // glowing underside
  // supports: posts 2.7 -> 3.8 on the existing walls only (short brackets where the wall sits at the booth edge)
