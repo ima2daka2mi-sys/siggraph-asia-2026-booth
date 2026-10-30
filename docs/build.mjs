@@ -181,7 +181,6 @@ const PLAN = {
     key: () => `<span class="wide tot"><b>Total</b>${fmt(totalW)} W (≈ ${(totalW / 230).toFixed(1)} A at 230 V) · ${totalOut} outlets, all at floor level</span>`},
   'lan-locations': {what: 'wired LAN drops and ports', opt: {pins: () => true, lan: true},
     key: () => `<span class="wide tot"><b>Total</b>${LAN.length} drops · ${ports(lanPorts)}</span>`},
-  'equipment-spec': {what: 'equipment positions', opt: {pins: () => true}, key: () => ''},
   'wall-mount': {what: 'screen size and position', opt: {pins: e => MOUNT[e.no], screens: true, label: e => `${IN[e.no]}"`}, key: () => ''},
 };
 const planPage = (k, title, first = false) => {const p = PLAN[k];
@@ -208,11 +207,12 @@ const DOCS = {
     <ul class="notes"><li>The ${lanPorts} ports are split from the venue lines with network switches, so fewer incoming lines are needed.</li>
       <li>Drop positions are approximate; route cables along walls or under tabletops.</li></ul>${SOURCE}`},
 
-  'equipment-spec': {title: 'Equipment Specification List', table: () => `
+  // positions are on the Floor Plan, so the spec list has no plan page of its own
+  'equipment-spec': {title: 'Equipment Specification List', tableOnly: true, table: () => `
     <table class="spec"><colgroup><col style="width:30px"><col style="width:20%"><col style="width:34px"><col style="width:18%"><col style="width:10%"><col style="width:10%"><col style="width:13%"><col></colgroup><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th><th>Size mm W×D×H</th><th class="n">Weight kg</th><th>Mounting</th><th>Space</th><th>Notes</th></tr></thead><tbody>
       ${EQ.map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td><td>${tx(e.size)}</td><td class="n">${tx(e.kg)}</td><td>${tx(e.mount)}</td><td>${e.space ? tx(e.space) : ''}</td><td>${e.note ? tx(e.note) : ''}</td></tr>`).join('')}
     </tbody></table>
-    <ul class="notes"><li>Power for each item: see the Power List.</li></ul>${SOURCE}`},
+    <ul class="notes"><li>Positions: see the Floor Plan. Power: see the Power List.</li></ul>${SOURCE}`},
 
   'wall-mount': {title: 'Wall-Mounted Screens', table: () => {
     const rows = EQ.filter(e => MOUNT[e.no]);
@@ -230,6 +230,7 @@ const cont = t => `<div class="pb"></div><h2 class="cont">${t} (cont.)</h2>`;
 // single document: plan page and table page in the document's own order (the floor plan is the plan alone)
 const sheet = (k, d) => `<section class="sheet">${head(d.title, k)}${d.planOnly
   ? `${planPage(k, d.title, true)}${d.notes()}`
+  : d.tableOnly ? d.table()
   : d.planFirst ? `${planPage(k, d.title, true)}${cont(d.title)}${d.table()}`
   : `${d.table()}${planPage(k, d.title)}`}</section>`;
 const html = (title, body) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${title}</title><style>${CSS}</style></head><body>${body}</body></html>`;
