@@ -544,7 +544,7 @@ LAN.forEach(l=>{const [X,Z]=W(...l.pos);
   const jack=new THREE.Mesh(new THREE.BoxGeometry(.12,.03,.12),lanMat);jack.position.set(X,.03,Z);lanGroup.add(jack);           // floor outlet
   const drop=new THREE.Mesh(new THREE.CylinderGeometry(.006,.006,l.tag-.1,6),lanMat);drop.position.set(X,(l.tag-.1)/2+.03,Z);lanGroup.add(drop); // cable up to the tag
   const d=document.createElement('div');d.className='lan';const txt=`LAN${l.ports>1?' ×'+l.ports:''}`;
-  const t=l.ipad?[`${txt}（iPad用 ${l.ipad}）`,`${txt} (${l.ipad} for iPad)`]:txt;d.innerHTML='<span></span>';d.firstChild.textContent=tr(t);if(l.ipad)i18nLabels.push([d.firstChild,t]);
+  d.innerHTML='<span></span>';d.firstChild.textContent=l.ipad?`${txt} (${l.ipad} for iPad)`:txt; // same wording in both languages
   d.onclick=ev=>{ev.stopPropagation();select(l.no,true);};const o=new CSS2DObject(d);o.position.set(X,l.tag,Z);lanGroup.add(o);lanTags[l.no]=d;});
 
 // ===== booth height 2700 marked at four corners =====
