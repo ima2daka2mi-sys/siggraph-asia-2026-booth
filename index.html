@@ -166,7 +166,7 @@ const controls=new OrbitControls(camera,renderer.domElement);
 controls.enableDamping=true; controls.maxPolarAngle=Math.PI*0.495; controls.minDistance=2; controls.maxDistance=28;
 // bloom: only emissive parts (screens, LEDs, hologram) are bright enough to glow
 const composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));
-const bloom=new UnrealBloomPass(new THREE.Vector2(1,1),.7,.45,.9);composer.addPass(bloom);composer.addPass(new OutputPass());
+const bloom=new UnrealBloomPass(new THREE.Vector2(1,1),.6,.2,.9); // tight radius keeps halos at edges, off the lantern logocomposer.addPass(bloom);composer.addPass(new OutputPass());
 
 // lights (exhibition hall: soft sky + overhead key)
 scene.add(new THREE.HemisphereLight(0xf2f4ff,0x55504a,1.1));
@@ -450,7 +450,7 @@ const F8_LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9EAAAE1CAYAAABQoxB
  drawOut(null);const img=new Image();img.onload=()=>drawOut(img);img.src=F8_LOGO;
  const inT=litTex(3000,575,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,0,w,18);x.textAlign='center';x.font='700 120px "Noto Sans JP",sans-serif';x.fillText(TAG,w/2,h/2+6);});
  const glow=(t,k)=>new THREE.MeshStandardMaterial({map:t||null,color:t?0xffffff:0xf8fbff,emissive:0xffffff,emissiveMap:t||null,emissiveIntensity:k,roughness:.6});
- const outM=new THREE.MeshStandardMaterial({map:outT,emissive:0xffffff,emissiveMap:emT,emissiveIntensity:.9,roughness:.6});
+ const outM=new THREE.MeshStandardMaterial({map:outT,emissive:0xffffff,emissiveMap:emT,emissiveIntensity:.62,roughness:.6});
  const inM=glow(inT,.4),softM=glow(null,.55);
  // one side: trapezoid section (outer face leans out at the top), extruded along the side; local x = outward, z = along the side
  const prof=new THREE.Shape();prof.moveTo(0,B+HB);prof.lineTo(-REC,B);prof.lineTo(-T,B);prof.lineTo(-T,B+HB);prof.closePath();
