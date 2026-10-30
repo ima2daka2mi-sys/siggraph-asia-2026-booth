@@ -124,6 +124,14 @@ function tv(cx,cy,nx,ny,w,h,ch,tex,face=0){const [X,Z]=W(cx,cy);const ang=Math.a
   const body=new THREE.Mesh(new THREE.BoxGeometry(w+0.03,h+0.03,0.05),mat.tvBody);body.castShadow=true;grp.add(body);
   const scr=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:.75,roughness:.3}));scr.position.z=0.026;grp.add(scr);
   grp.position.set(X+nx*((face+25)/1000),ch,Z+ny*((face+25)/1000));grp.rotation.y=ang;scene.add(grp);return grp;}
+// laptop on a stand: centre point (plan), facing direction (plan), table height, screen texture
+function laptop(cx,cy,nx,ny,h,tex){const [X,Z]=W(cx,cy);const g=new THREE.Group();g.position.set(X,h,Z);g.rotation.y=Math.atan2(nx,ny);scene.add(g);
+  const al=M(0x9aa0a8,{metalness:.5,roughness:.35});
+  const kb=new THREE.Mesh(new THREE.BoxGeometry(.34,.02,.24),al);kb.position.y=.01;kb.castShadow=true;g.add(kb);
+  const lid=new THREE.Group();lid.position.set(0,.02,-.12);lid.rotation.x=-.25;g.add(lid);
+  const sh=new THREE.Mesh(new THREE.BoxGeometry(.34,.22,.012),al);sh.position.y=.11;sh.castShadow=true;lid.add(sh);
+  const sc=new THREE.Mesh(new THREE.PlaneGeometry(.31,.2),new THREE.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:.8}));sc.position.set(0,.11,.007);lid.add(sc);
+  return g;}
 const IN={32:[.715,.402],43:[.952,.535],50:[1.107,.623],85:[1.882,1.059]};
 
 // hall floor + carpet
@@ -151,8 +159,12 @@ label('d ラリー',6000,750,2.95);
 // F8VPS diagonal wall + light grey stand + 50" x2
 const fA=[180,170],fB=[1750,1600];
 const fw=band(fA,fB,370,0,0,H,mat.wall);
-band([430,400],[1667,1525],380,375,0,1.0,mat.stand);
+// stand runs the full wall length; the A end stops where its outer corner meets the booth edge (y=0)
+const fS=[452,418];
+band(fS,fB,380,375,0,1.0,mat.stand);
 {const [nx,ny]=fw.n;const c=[1048,962];
+ const lt=screenTex('F8VPS','デモ',205);
+ [.25,.75].forEach(s=>laptop(fS[0]+(fB[0]-fS[0])*s+nx*375,fS[1]+(fB[1]-fS[1])*s+ny*375,nx,ny,1.0,lt));
  tv(c[0]+nx*185,c[1]+ny*185,nx,ny,...IN[50],1.62,screenTex('F8VPS','50"',205));
  tv(c[0]-nx*185,c[1]-ny*185,-nx,-ny,...IN[50],1.5,screenTex('F8VPS','50"',230));
  label('F8VPS',c[0]+nx*600,c[1]+ny*600,1.15,'k');
@@ -160,8 +172,10 @@ band([430,400],[1667,1525],380,375,0,1.0,mat.stand);
 
 // ForumSync bent wall + light grey stand + 50" + 43" + 85"
 prism([[1950,2750],[3180,3980],[3180,6000],[2670,6000],[2670,4191],[1589,3111]],0,H,mat.wall);
-band([2150,2950],[3050,3850],330,175,0,1.0,mat.stand);
+band([1950,2750],[3180,3980],330,175,0,1.0,mat.stand);
 {const n=[Math.SQRT1_2,-Math.SQRT1_2];
+ const lt=screenTex('ForumSync','デモ',195);
+ [.25,.75].forEach(s=>laptop(1950+1230*s+n[0]*175,2750+1230*s+n[1]*175,n[0],n[1],1.0,lt));
  tv(2600,3400,n[0],n[1],...IN[50],1.62,screenTex('ForumSync','デジタルツイン 50"',195));
  tv(2130,3651,-n[0],-n[1],...IN[43],1.5,screenTex('VR360','43"',120));
  label('ForumSync デジタルツイン',2600+n[0]*700,3400+n[1]*700,1.15,'k');
