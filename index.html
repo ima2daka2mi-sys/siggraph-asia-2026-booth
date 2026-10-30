@@ -171,9 +171,7 @@ const fA=[180,170],fB=[1750,1600];
 const fw=band(fA,fB,370,0,0,H,mat.wall);
 // stand runs the full wall length; the A end stops where its outer corner meets the booth edge (y=0)
 const fS=[452,418];
-band(fS,fB,380,375,0,1.0,mat.stand);
-[.92,.04].forEach(z=>band(fS,fB,12,571,z,.025,mat.led)); // LED lines on the front face
-{const [nx,ny]=fw.n;const c=[1048,962];
+band(fS,fB,380,375,0,1.0,mat.stand);{const [nx,ny]=fw.n;const c=[1048,962];
  const lt=screenTex('F8VPS','デモ',205);
  [.25,.75].forEach(s=>laptop(fS[0]+(fB[0]-fS[0])*s+nx*375,fS[1]+(fB[1]-fS[1])*s+ny*375,nx,ny,1.0,lt));
  tv(c[0]+nx*185,c[1]+ny*185,nx,ny,...IN[50],1.62,screenTex('F8VPS','50"',205));
@@ -183,9 +181,7 @@ band(fS,fB,380,375,0,1.0,mat.stand);
 
 // ForumSync bent wall + light grey stand + 50" + 43" + 85"
 prism([[1950,2750],[3180,3980],[3180,6000],[2670,6000],[2670,4191],[1589,3111]],0,H,mat.wall);
-band([1950,2750],[3180,3980],330,175,0,1.0,mat.stand);
-[.92,.04].forEach(z=>band([1950,2750],[3180,3980],12,346,z,.025,mat.led)); // LED lines on the front face
-{const n=[Math.SQRT1_2,-Math.SQRT1_2];
+band([1950,2750],[3180,3980],330,175,0,1.0,mat.stand);{const n=[Math.SQRT1_2,-Math.SQRT1_2];
  const lt=screenTex('ForumSync','デモ',195);
  [.25,.75].forEach(s=>laptop(1950+1230*s+n[0]*175,2750+1230*s+n[1]*175,n[0],n[1],1.0,lt));
  tv(2600,3400,n[0],n[1],...IN[50],1.62,screenTex('ForumSync','デジタルツイン 50"',195));
