@@ -36,6 +36,19 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .lbl{font-family:var(--ui);font-size:11px;font-weight:700;color:#fff;background:rgba(15,17,21,.78);border:1px solid rgba(255,255,255,.18);padding:2px 7px;border-radius:3px;white-space:nowrap;pointer-events:none}
 .lbl.k{background:rgba(63,143,224,.9);border-color:transparent}
 .hide-labels .lbl{display:none}
+/* documents menu (PDFs built by docs/build.mjs) */
+.docs{position:relative}
+.docs summary{list-style:none;font-size:12px;padding:6px 10px;border-radius:4px;cursor:pointer;border:1px solid transparent}
+.docs summary::-webkit-details-marker{display:none}
+.docs summary::after{content:" ▾";color:var(--muted)}
+.docs summary:hover{border-color:var(--line)}
+.docs[open] summary{background:var(--accent);color:#fff}
+.docs summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.docs .menu{position:absolute;top:calc(100% + 8px);left:-4px;z-index:5;min-width:250px;display:flex;flex-direction:column;padding:4px;background:#14161b;border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.docs a{display:flex;justify-content:space-between;gap:12px;color:var(--fg);text-decoration:none;font-size:12px;padding:7px 10px;border-radius:4px}
+.docs a:hover,.docs a:focus-visible{background:rgba(63,143,224,.2);outline:none}
+.docs a small{color:var(--muted);font-size:10.5px}
+.docs a.all{border-top:1px solid var(--line);margin-top:4px;padding-top:9px;font-weight:700}
 /* numbered equipment pins (same numbering as the equipment sheet) */
 .pin{pointer-events:auto;cursor:pointer}
 .pin span{display:block;width:20px;height:20px;border-radius:50%;background:#6b3fa0;color:#fff;font:700 11px/20px var(--ui);text-align:center;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.55);transition:transform .15s,background .15s}
@@ -107,6 +120,17 @@ select option{background:#1b1d22;color:var(--fg)}
   </div>
   <div class="group" role="group" aria-label="Sign concept" id="sign-group" hidden>
     <label class="glab" for="sign-sel" data-en="Sign concept" data-ja="看板案">Sign concept</label><select id="sign-sel"></select>
+  </div>
+  <div class="group" role="group" aria-label="Documents">
+    <details class="docs" id="docs"><summary data-en="Documents (PDF)" data-ja="帳票（PDF）">Documents (PDF)</summary>
+    <div class="menu">
+      <a href="docs/floor-plan.pdf" download target="_blank" rel="noopener"><span data-en="Floor plan" data-ja="平面図">Floor plan</span><small>PDF A4横</small></a>
+      <a href="docs/power-list.pdf" download target="_blank" rel="noopener"><span data-en="Power list" data-ja="電力一覧">Power list</span><small>PDF A4</small></a>
+      <a href="docs/lan-locations.pdf" download target="_blank" rel="noopener"><span data-en="Wired LAN locations" data-ja="LAN必要箇所">Wired LAN locations</span><small>PDF A4</small></a>
+      <a href="docs/equipment-spec.pdf" download target="_blank" rel="noopener"><span data-en="Equipment specs" data-ja="出展機材 仕様一覧">Equipment specs</span><small>PDF A4横</small></a>
+      <a href="docs/wall-mount.pdf" download target="_blank" rel="noopener"><span data-en="Wall-mounted screens" data-ja="壁掛けモニター 設置一覧">Wall-mounted screens</span><small>PDF A4</small></a>
+      <a class="all" href="docs/booth-documents-all.pdf" download target="_blank" rel="noopener"><span data-en="All documents (5 pages)" data-ja="帳票一式（5ページ）">All documents (5 pages)</span><small>PDF</small></a>
+    </div></details>
   </div>
   <div class="group" role="group" aria-label="Language">
     <button id="l-en" aria-pressed="true" lang="en">EN</button>
@@ -603,6 +627,7 @@ function applyLang(l){lang=l;try{localStorage.setItem('booth-lang',l);}catch(e){
   i18nLabels.forEach(([d,t])=>d.textContent=tr(t));
   document.getElementById('l-en').setAttribute('aria-pressed',l==='en');document.getElementById('l-ja').setAttribute('aria-pressed',l==='ja');
   fillSignSel();showSign(signKey);renderPanel();placePanel();}
+{const dm=document.getElementById('docs');addEventListener('click',ev=>{if(dm.open&&!dm.contains(ev.target))dm.open=false;});addEventListener('keydown',ev=>{if(ev.key==='Escape')dm.open=false;});}
 document.getElementById('l-en').onclick=()=>applyLang('en');document.getElementById('l-ja').onclick=()=>applyLang('ja');
 applyLang(lang);
 camera.position.set(...views.persp[0]);controls.target.set(...views.persp[1]);
