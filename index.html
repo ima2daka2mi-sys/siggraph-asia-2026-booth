@@ -68,6 +68,10 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
+import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
+import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 
 try{ await document.fonts.load('900 40px "Noto Sans JP"'); await document.fonts.load('700 20px "Noto Sans JP"'); }catch(e){}
 
@@ -87,6 +91,9 @@ scene.fog=new THREE.Fog(0x2a2d33,18,40);
 const camera=new THREE.PerspectiveCamera(42,1,0.05,100);
 const controls=new OrbitControls(camera,renderer.domElement);
 controls.enableDamping=true; controls.maxPolarAngle=Math.PI*0.495; controls.minDistance=2; controls.maxDistance=28;
+// bloom: only emissive parts (screens, LEDs, hologram) are bright enough to glow
+const composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(1,1),.7,.45,.9);composer.addPass(bloom);composer.addPass(new OutputPass());
 
 // lights (exhibition hall: soft sky + overhead key)
 scene.add(new THREE.HemisphereLight(0xf2f4ff,0x55504a,1.1));
@@ -99,7 +106,8 @@ const fill=new THREE.DirectionalLight(0xcfe0ff,0.5); fill.position.set(6,6,-5); 
 const W=(x,y)=>[(x-3000)/1000,(y-3000)/1000];
 const M=(c,o={})=>new THREE.MeshStandardMaterial({color:c,roughness:.7,metalness:0,...o});
 const mat={
-  wall:M(0x8a8d93,{roughness:.85}), stand:M(0xd4d6da,{roughness:.6}), tvBody:M(0x0d0e10,{roughness:.4}),
+  wall:M(0x8a8d93,{roughness:.85}), stand:new THREE.MeshPhysicalMaterial({color:0xd4d6da,roughness:.3,clearcoat:1,clearcoatRoughness:.15}),
+  led:M(0x000000,{emissive:0x38c8ff,emissiveIntensity:4}), ledFloor:M(0x000000,{emissive:0x3f8fe0,emissiveIntensity:3}), tvBody:M(0x0d0e10,{roughness:.4}),
   carpet:M(0x3d3f44,{roughness:1}), floor:M(0x8d8f93,{roughness:.95}), white:M(0xf1f1ef), grey:M(0x5e6168),
   green:M(0x6a9a3a), red:M(0xc0392b), metal:M(0xb9bec6,{metalness:.6,roughness:.35}), door:M(0x2b2d31,{roughness:.6}),
   blue:M(0x4fa3d9), logo:M(0xf2a48f,{roughness:1})
@@ -137,6 +145,8 @@ const IN={32:[.715,.402],43:[.952,.535],50:[1.107,.623],85:[1.882,1.059]};
 // hall floor + carpet
 const fl=mesh(new THREE.PlaneGeometry(60,60),mat.floor,false);fl.rotation.x=-Math.PI/2;fl.position.y=-0.002;
 box(0,0,6000,6000,0,0.012,mat.carpet);
+// LED line around the carpet edge
+[[0,0,6000,25],[0,5975,6000,6000],[0,25,25,5975],[5975,25,6000,5975]].forEach(r=>box(...r,0.012,0.006,mat.ledFloor));
 
 const H=2.7;
 // STOCK
@@ -162,6 +172,7 @@ const fw=band(fA,fB,370,0,0,H,mat.wall);
 // stand runs the full wall length; the A end stops where its outer corner meets the booth edge (y=0)
 const fS=[452,418];
 band(fS,fB,380,375,0,1.0,mat.stand);
+[.92,.04].forEach(z=>band(fS,fB,12,571,z,.025,mat.led)); // LED lines on the front face
 {const [nx,ny]=fw.n;const c=[1048,962];
  const lt=screenTex('F8VPS','デモ',205);
  [.25,.75].forEach(s=>laptop(fS[0]+(fB[0]-fS[0])*s+nx*375,fS[1]+(fB[1]-fS[1])*s+ny*375,nx,ny,1.0,lt));
@@ -173,6 +184,7 @@ band(fS,fB,380,375,0,1.0,mat.stand);
 // ForumSync bent wall + light grey stand + 50" + 43" + 85"
 prism([[1950,2750],[3180,3980],[3180,6000],[2670,6000],[2670,4191],[1589,3111]],0,H,mat.wall);
 band([1950,2750],[3180,3980],330,175,0,1.0,mat.stand);
+[.92,.04].forEach(z=>band([1950,2750],[3180,3980],12,346,z,.025,mat.led)); // LED lines on the front face
 {const n=[Math.SQRT1_2,-Math.SQRT1_2];
  const lt=screenTex('ForumSync','デモ',195);
  [.25,.75].forEach(s=>laptop(1950+1230*s+n[0]*175,2750+1230*s+n[1]*175,n[0],n[1],1.0,lt));
@@ -184,8 +196,11 @@ tv(3180,5000,1,0,...IN[85],1.45,screenTex('Presentation','85"',215));
 label('85インチモニター',3400,5000,2.1);
 
 // 3D hologram display
+let holoCore;
 {const [X,Z]=W(420,1780);const b=mesh(new THREE.CylinderGeometry(.25,.28,.9,40),mat.grey);b.position.set(X,.45,Z);
  const holo=mesh(new THREE.CylinderGeometry(.24,.24,.6,40,1,true),new THREE.MeshStandardMaterial({color:0x7fd8ff,emissive:0x2aa8ff,emissiveIntensity:.6,transparent:true,opacity:.35,side:THREE.DoubleSide}),false);holo.position.set(X,1.2,Z);holo.castShadow=false;
+ holoCore=new THREE.Mesh(new THREE.IcosahedronGeometry(.16,1),new THREE.MeshBasicMaterial({color:0x9fe8ff,wireframe:true}));holoCore.position.set(X,1.2,Z);scene.add(holoCore);
+ const glow=mesh(new THREE.RingGeometry(.29,.34,48),mat.led,false);glow.rotation.x=-Math.PI/2;glow.position.set(X,.905,Z);
  label('3Dホログラフィックディスプレイ',420,1780,1.75);}
 
 // pole partition
@@ -387,9 +402,13 @@ tog('t-label',v=>stage.classList.toggle('hide-labels',!v));
 showSign('none');
 tog('t-rot',v=>{controls.autoRotate=v;controls.autoRotateSpeed=0.8;});
 
-function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h);labelR.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h);composer.setSize(w,h);labelR.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
 addEventListener('resize',resize);resize();
-renderer.setAnimationLoop(()=>{if(anim)anim();controls.update();renderer.render(scene,camera);labelR.render(scene,camera);});
+const clock=new THREE.Clock();
+renderer.setAnimationLoop(()=>{if(anim)anim();controls.update();
+  const t=clock.getElapsedTime();holoCore.rotation.y=t*.8;holoCore.rotation.x=t*.3;holoCore.position.y=1.2+Math.sin(t*1.5)*.04;
+  mat.led.emissiveIntensity=3.5+Math.sin(t*2)*.8;
+  composer.render();labelR.render(scene,camera);});
 </script>
 
 </body>
