@@ -47,7 +47,7 @@ const en = v => Array.isArray(v) ? v[1] : v;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const tx = v => esc(en(v)); // documents are English only
 const fmt = n => n.toLocaleString('en-US');
-const outlets = e => e.w ? e.qty : 0;
+const outlets = e => e.outlets ?? (e.w ? e.qty : 0); // an outlet with no fixed load (STOCK) sets outlets itself
 const totalW = EQ.reduce((s, e) => s + e.w * e.qty, 0), totalOut = EQ.reduce((s, e) => s + outlets(e), 0);
 const lanPorts = LAN.reduce((s, l) => s + l.ports, 0);
 const PC = EQ.find(e => e.no === '+');
@@ -178,8 +178,8 @@ const kRow = (cls, no, text, val = '', wide = false) => `<span${wide ? ' class="
 const PLAN = {
   'floor-plan': {what: 'equipment positions', opt: {pins: () => true},
     key: () => EQ.filter(e => e.pos).map(e => kRow('kn', e.no, tx(e.name), e.qty > 1 ? `×${e.qty}` : '')).join('')},
-  'power-list': {what: 'power at each position (W)', opt: {pins: () => true, pcs: true, label: e => e.w ? `${fmt(e.w * e.qty)} W` : ''},
-    key: () => EQ.filter(e => e.pos).map(e => kRow('kn', e.no, tx(e.name), e.w ? `${fmt(e.w * e.qty)} W` : tx(e.wText))).join('')
+  'power-list': {what: 'power at each position (W)', opt: {pins: () => true, pcs: true, label: e => e.w ? `${fmt(e.w * e.qty)} W` : e.outlets ? 'outlet' : ''},
+    key: () => EQ.filter(e => e.pos).map(e => kRow('kn', e.no, tx(e.name), e.w ? `${fmt(e.w * e.qty)} W` : e.outlets ? `${e.outlets} outlet, load TBD` : tx(e.wText))).join('')
       + pcAt.map(({l, n}) => kRow('kp', 'PC', `Laptop ×${n} at ${l.no} – ${tx(l.name)}`, `${fmt(n * PC.w)} W`, true)).join('')
       + `<span class="wide tot"><b>Total</b>${fmt(totalW)} W (≈ ${(totalW / 230).toFixed(1)} A at 230 V) · ${totalOut} outlets</span>`},
   'lan-locations': {what: 'wired LAN drops and ports', opt: {pins: () => true, lan: true},
@@ -210,7 +210,8 @@ const DOCS = {
     <table><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th><th class="n">W / unit</th><th class="n">Subtotal W</th><th class="n">Outlets</th><th>Mounting / location</th></tr></thead><tbody>
       ${EQ.filter(e => e.no !== 'iP').map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td><td class="n">${e.w ? fmt(e.w) + (e.wNote ? `<small>${esc(e.wNote)}</small>` : '') : tx(e.wText)}</td><td class="n">${e.w ? fmt(e.w * e.qty) : '—'}</td><td class="n">${outlets(e) || '—'}</td><td>${e === PC ? `At LAN drops ${Object.entries(PC_AT).map(([k, n]) => `${k} ×${n}`).join(', ')}` : tx(e.mount)}</td></tr>`).join('')}
     </tbody><tfoot><tr><td></td><td>Total</td><td></td><td></td><td class="n">${fmt(totalW)}</td><td class="n">${totalOut}</td><td>≈ ${(totalW / 230).toFixed(1)} A at 230 V</td></tr></tfoot></table>
-    <ul class="notes"><li>Extension cords and power strips are not permitted: each location needs its own outlets (guide: one outlet per device).</li>
+    <ul class="notes"><li>All outlets are at floor level.</li>
+      <li>Extension cords and power strips are not permitted: each location needs its own outlets (guide: one outlet per device).</li>
       <li>Power figures are catalog estimates; final values will be updated once equipment is confirmed.</li>
       <li>The VR motion seat alone draws 220 VAC 9 A; a dedicated circuit is recommended.</li>
       <li>Laptop outlets are placed at the LAN drops of the PCs they serve (one outlet per laptop), including the presenter's laptop at L7.</li>
@@ -223,7 +224,8 @@ const DOCS = {
     <table><thead><tr><th>No.</th><th>Location / devices</th><th class="n">Ports</th><th>Notes</th></tr></thead><tbody>
       ${LAN.map(l => `<tr><td class="no">${l.no}</td><td>${tx(l.name)}</td><td class="n">${l.ports}</td><td>${l.ipad ? `${l.ipad} for iPad` : ''}</td></tr>`).join('')}
     </tbody><tfoot><tr><td></td><td>Total</td><td class="n">${lanPorts}</td><td></td></tr></tfoot></table>
-    <ul class="notes"><li>Drop positions are approximate; route cables along walls or under tabletops near stands and tables.</li></ul>${SOURCE}`},
+    <ul class="notes"><li>The 17 ports are provided by splitting the venue lines with network switches; the number of incoming venue lines can be fewer than 17.</li>
+      <li>Drop positions are approximate; route cables along walls or under tabletops near stands and tables.</li></ul>${SOURCE}`},
 
   'equipment-spec': {title: 'Equipment Specification List', table: () => `
     <table class="spec"><colgroup><col style="width:22px"><col style="width:20%"><col style="width:26px"><col style="width:13%"><col style="width:9%"><col style="width:9%"><col style="width:9%"><col style="width:8%"><col></colgroup><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th><th>Size mm (W×D×H)</th><th class="n">Weight kg</th><th class="n">Power W</th><th>Mounting</th><th>Space</th><th>Notes</th></tr></thead><tbody>
@@ -238,7 +240,7 @@ const DOCS = {
     </tbody><tfoot><tr><td></td><td>Total: ${rows.length} screens</td><td></td><td></td><td></td><td></td><td class="n">${rows.reduce((s, e) => s + +(String(en(e.kg)).match(/\d+(\.\d+)?/) || [0])[0], 0)}</td><td class="n">${fmt(rows.reduce((s, e) => s + e.w, 0))}</td></tr></tfoot></table>
     <ul class="notes"><li>Centre height is measured from the floor (carpet) to the screen centre; the top edge is approximate (screen height plus bezel).</li>
       <li>Walls are H2700; reinforcement (backing) is needed at each mounting position.</li>
-      <li>One power outlet behind each screen.</li></ul>${SOURCE}`;}},
+      <li>One power outlet per screen, at floor level below the screen; the cable runs up the wall behind it.</li></ul>${SOURCE}`;}},
 };
 
 fs.mkdirSync(SRC, {recursive: true});

@@ -150,7 +150,7 @@ select option{background:#1b1d22;color:var(--fg)}
     <div class="sum">
       <div><b id="sum-w"></b><span data-en="Total power" data-ja="合計電力">Total power</span></div>
       <div><b id="sum-a"></b><span data-en="at 230 V" data-ja="230V換算">at 230 V</span></div>
-      <div><b>23</b><span data-en="Outlets" data-ja="口数">Outlets</span></div>
+      <div><b>24</b><span data-en="Outlets" data-ja="口数">Outlets</span></div>
     </div>
   </header>
   <div class="list" id="eq-list"></div>
@@ -536,7 +536,7 @@ const EQ=[
  {no:2,name:['VR360用モニター 43インチ','43" monitor for VR360'],qty:1,size:['約960×60×560','approx. 960×60×560'],kg:'9',w:80,mount:['壁掛け','Wall-mounted'],pos:[2130,3651],pin:2.6,th:1.7,view:[-1,.2],d:2.5},
  {no:3,name:['VRモーションシート（公道最速体感）','VR motion seat (rally experience)'],qty:1,size:'800×800×1600',kg:['約110（最大荷重150）','approx. 110 (max. load 150)'],w:2000,wNote:'220 VAC 9 A',mount:['床置き','Floor'],
   space:['約1.35×1.4 m','approx. 1.35×1.4 m'],note:['背面の壁に43インチTV（壁掛け）','43" TV wall-mounted on the wall behind'],pos:[5000,2250],pin:2.25,th:1.0,view:[0,1],d:3.5},
- {no:4,name:['3Dホログラフィックディスプレイ（Metavania HoloSync）','3D holographic display (Metavania HoloSync)'],qty:1,size:['75×75 厚み150','75×75, depth 150'],kg:['約1.5','approx. 1.5'],w:200,mount:['床置き','Floor'],
+ {no:4,name:['3Dホログラフィックディスプレイ（Metavania HoloSync）','3D holographic display (Metavania HoloSync)'],qty:1,size:['750×750 厚み150','750×750, depth 150'],kg:['約1.5','approx. 1.5'],w:200,mount:['床置き','Floor'],
   note:['台座 Ø約500 mm ポールスタンド／背面の65インチTVと連動','Pole stand, base approx. Ø500 mm; synced with the 65" TV behind it'],pos:[420,1780],pin:2.45,th:1.4,view:[-.673,.739],d:3},
  {no:5,name:['50インチTV（F8VPS 展示台側）','50" TV (F8VPS, stand side)'],qty:1,size:['約1120×65×650','approx. 1120×65×650'],kg:'12',w:120,mount:['壁掛け','Wall-mounted'],pos:[1172,825],pin:2.15,th:1.4,view:[.673,-.739],d:3},
  {no:6,name:['65インチTV（F8VPS 壁面側・ホログラム背面）','65" TV (F8VPS wall side, behind hologram)'],qty:1,size:['約1450×70×840','approx. 1450×70×840'],kg:['約22','approx. 22'],w:200,mount:['壁掛け','Wall-mounted'],
@@ -549,7 +549,9 @@ const EQ=[
  {no:11,name:['43インチTV（モーションシート用）','43" TV (for motion seat)'],qty:1,size:['約960×60×560','approx. 960×60×560'],kg:'9',w:80,mount:['壁掛け','Wall-mounted'],pos:[5000,1500],pin:2.7,th:1.7,view:[0,1],d:3},
  {no:'+',name:['ノートPC','Laptop PCs'],qty:13,size:'—',kg:'—',w:120,mount:['各機材の近く','Near each exhibit']},
  {no:'iP',name:['iPad（F8VPS・ForumSync 展示台）','iPad (F8VPS & ForumSync stands)'],qty:2,size:'—',kg:'—',w:0,wText:['—','—'],mount:['展示台の上（スタンド立て）','On the stands, on a holder'],
-  note:['各展示台の中央、ノートPC 2台の間。有線LAN 1口ずつ','Centre of each stand between the two laptops; one wired LAN port each']}
+  note:['各展示台の中央、ノートPC 2台の間。有線LAN 1口ずつ','Centre of each stand between the two laptops; one wired LAN port each']},
+ {no:'S',name:['STOCK内コンセント（ネットワークスイッチ等）','STOCK outlet (network switch etc.)'],qty:1,size:'—',kg:'—',w:0,outlets:1,wText:['—','—'],mount:['STOCK内・床','Inside STOCK, floor'],
+  note:['汎用（ネットワークスイッチ等）。電力は機器確定後に記入','General use (e.g. network switch); power to be filled in once the devices are fixed'],pos:[4900,400],pin:.9,th:.2,view:[0,1],d:2.2,up:5.5}
 ];
 const totalW=EQ.reduce((s,e)=>s+e.w*e.qty,0), maxW=Math.max(...EQ.map(e=>e.w*e.qty));
 const fmt=n=>n.toLocaleString('en-US');
