@@ -443,7 +443,7 @@ const F8_LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9EAAAE1CAYAAABQoxB
  drawOut(null);const img=new Image();img.onload=()=>drawOut(img);img.src=F8_LOGO;
  const inT=litTex(3000,575,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,0,w,18);x.textAlign='center';x.font='700 120px "Noto Sans JP",sans-serif';x.fillText(TAG,w/2,h/2+6);});
  const glow=(t,k)=>new THREE.MeshStandardMaterial({map:t||null,color:t?0xffffff:0xf8fbff,emissive:0xffffff,emissiveMap:t||null,emissiveIntensity:k,roughness:.6});
- const outM=glow(outT,1.0),inM=glow(inT,.75),softM=glow(null,.9);
+ const outM=glow(outT,.5),inM=glow(inT,.4),softM=glow(null,.45);   // just over the bloom threshold: a soft halo without washing out the logo
  // one side: trapezoid section (outer face leans out at the top), extruded along the side; local x = outward, z = along the side
  const prof=new THREE.Shape();prof.moveTo(0,B+HB);prof.lineTo(-REC,B);prof.lineTo(-T,B);prof.lineTo(-T,B+HB);prof.closePath();
  [[3000,0,0,-1,6,6-2*T],[3000,6000,0,1,6,6-2*T],[0,3000,-1,0,6-2*T,6-2*T],[6000,3000,1,0,6-2*T,6-2*T]].forEach(([cx,cy,nx,ny,L,Li])=>{
