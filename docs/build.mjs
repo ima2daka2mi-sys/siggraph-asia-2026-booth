@@ -178,7 +178,7 @@ const PLAN = {
   'floor-plan': {what: 'equipment positions', opt: {pins: () => true},
     key: () => EQ.filter(e => e.pos).map(e => kRow('kn', e.no, tx(e.name), e.qty > 1 ? `×${e.qty}` : '')).join('')},
   'power-list': {what: 'power at each position', opt: {pins: () => true, pcs: true, label: e => e.w ? `${fmt(e.w * e.qty)} W` : ''},
-    key: () => `<span class="wide tot"><b>Total</b>${fmt(totalW)} W (≈ ${(totalW / 230).toFixed(1)} A at 230 V) · ${totalOut} outlets, all at floor level</span>`},
+    key: () => `<span class="wide tot"><b>Total</b>${fmt(totalW)} W (≈ ${(totalW / 230).toFixed(1)} A at 230 V) · ${totalOut} outlets, all at floor level. Positions may be adjusted to suit site conditions.</span>`},
   'lan-locations': {what: 'wired LAN drops and ports', opt: {pins: () => true, lan: true},
     key: () => `<span class="wide tot"><b>Total</b>${LAN.length} drops · ${ports(lanPorts)}</span>`},
   'wall-mount': {what: 'screen size and position', opt: {pins: e => MOUNT[e.no], screens: true, label: e => `${IN[e.no]}"`}, key: () => ''},
@@ -195,7 +195,8 @@ const DOCS = {
     <table><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th><th class="n">W / unit</th><th class="n">Subtotal W</th><th class="n">Outlets</th><th>Mounting / location</th></tr></thead><tbody>
       ${EQ.filter(e => e.no !== 'iP').map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td><td class="n">${e.w ? fmt(e.w) + (e.wNote ? `<small>${esc(e.wNote)}</small>` : '') : tx(e.wText)}</td><td class="n">${e.w ? fmt(e.w * e.qty) : '—'}</td><td class="n">${outlets(e) || '—'}</td><td>${e === PC ? `At LAN drops ${Object.entries(PC_AT).map(([k, n]) => `${k} ×${n}`).join(', ')}` : tx(e.mount)}</td></tr>`).join('')}
     </tbody><tfoot><tr><td></td><td>Total</td><td></td><td></td><td class="n">${fmt(totalW)}</td><td class="n">${totalOut}</td><td>≈ ${(totalW / 230).toFixed(1)} A at 230 V</td></tr></tfoot></table>
-    <ul class="notes"><li>All outlets at floor level, one per device. Extension cords and power strips are not permitted.</li>
+    <ul class="notes"><li><b>Outlet positions are indicative and may be adjusted flexibly to suit site conditions.</b></li>
+      <li>All outlets at floor level, one per device. Extension cords and power strips are not permitted.</li>
       <li>Dedicated circuits recommended for the VR360 Simulator (2,800 W ≈ 12.2 A) and the VR motion seat (220 VAC 9 A).</li>
       <li>Laptop outlets are at the LAN drops of the PCs they serve (see plan).</li>
       <li>Power figures are catalog estimates; final values will follow once equipment is confirmed.</li></ul>${SOURCE}`},
