@@ -88,11 +88,9 @@ function plan({eq = true, lan = true, focus = '', h = '120mm'} = {}) {
 // ---- documents ----
 const CSS = `
 @page{size:A4;margin:14mm 12mm}
-@page land{size:A4 landscape;margin:12mm}
 *{box-sizing:border-box}
 body{margin:0;font-family:"Segoe UI",Arial,sans-serif;color:#15171b;font-size:9.5pt;line-height:1.45;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .sheet{break-after:page}.sheet:last-child{break-after:auto}
-.land{page:land}
 header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #1f4e79;padding-bottom:6px;margin-bottom:10px}
 h1{margin:0;font-size:16pt;letter-spacing:.02em}h1 small{display:block;font-size:10pt;font-weight:400;color:#555}
 .meta{text-align:right;font-size:8.5pt;color:#444}.meta b{color:#15171b}
@@ -107,7 +105,7 @@ tfoot td{background:#eef3f8;font-weight:700}
 .chips{display:flex;gap:10px;margin:0 0 10px}
 .chip{flex:1;border:1px solid #b9bec6;border-radius:4px;padding:6px 10px}.chip b{display:block;font-size:15pt}.chip span{font-size:8pt;color:#555}
 .notes{margin:10px 0 0;padding-left:16px;font-size:8.4pt;color:#333}.notes li{margin:2px 0}
-.wrap{display:flex;gap:12px;align-items:flex-start}.wrap>.plan{flex:none}.wrap>div{flex:1}
+.wrap{margin-top:8px}.wrap .notes{margin-top:6px}
 .plan{width:auto;display:block;margin:0 auto}
 .plan .carpet{fill:#f4f5f6;stroke:#15171b;stroke-width:24}
 .plan .wall{fill:#8a8d93;stroke:#3a3d42;stroke-width:10}
@@ -128,7 +126,7 @@ tfoot td{background:#eef3f8;font-weight:700}
 .plan .lan.big rect{stroke-width:20}
 .plan .landot{fill:#ff9f1a;stroke:#15171b;stroke-width:12}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:8pt;margin-top:6px;color:#333}.legend i{display:inline-block;width:14px;height:10px;margin-right:4px;vertical-align:-1px;border:1px solid #555}
-table.spec{font-size:8pt;table-layout:fixed}table.spec td{padding:2px 5px}table.spec small{font-size:7pt}
+table.spec{font-size:7.4pt;table-layout:fixed}table.spec th{font-size:7.2pt;padding:3px 4px}table.spec td{padding:2px 4px;overflow-wrap:anywhere}table.spec td.n{white-space:normal}
 footer.src{margin-top:8px;font-size:7.6pt;color:#666}
 `;
 const head = (ttl, no) => `<header><h1>${ttl}</h1>
@@ -139,14 +137,15 @@ const legend = `<div class="legend"><span><i style="background:#8a8d93"></i>Wall
   <span><i style="background:#ff9f1a"></i>Wired LAN</span><span><i style="background:#c0392b"></i>Pole partition</span></div>`;
 
 const DOCS = {
-  'floor-plan': {title: 'Floor Plan', land: true, body: () => `
-    <div class="wrap">${plan({focus: 'eq', lan: 'dot', h: '158mm'})}
+  'floor-plan': {title: 'Floor Plan', body: () => `
+    ${plan({focus: 'eq', lan: 'dot', h: '146mm'})}${legend}
+    <div class="wrap">
     <div><table><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th></tr></thead><tbody>
       ${EQ.filter(e => e.pos).map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td></tr>`).join('')}
       <tr><td class="no" style="background:#ff9f1a">L</td><td>Wired LAN: ${LAN.length} drops / ${lanPorts} ports (see Wired LAN Locations)</td><td class="n">${lanPorts}</td></tr>
     </tbody></table>
     <ul class="notes"><li>Dimensions in mm. Walls H2700, stands H1000 (tentative).</li>
-      <li>Dashed outlines show floor-standing units (VR360 2047×1250, motion seat 800×800).</li></ul></div></div>${legend}`},
+      <li>Dashed outlines show floor-standing units (VR360 2047×1250, motion seat 800×800).</li></ul></div></div>`},
 
   'power-list': {title: 'Power List', body: () => `
     <div class="chips"><div class="chip"><b>${fmt(totalW)} W</b><span>Total power</span></div><div class="chip"><b>≈ ${(totalW / 230).toFixed(1)} A</b><span>at 230 V</span></div>
@@ -168,8 +167,8 @@ const DOCS = {
     </tbody><tfoot><tr><td></td><td>Total</td><td class="n">${lanPorts}</td><td></td></tr></tfoot></table>
     <ul class="notes"><li>Drop positions are approximate; route cables along walls or under tabletops near stands and tables.</li></ul>${SOURCE}`},
 
-  'equipment-spec': {title: 'Equipment Specification List', land: true, body: () => `
-    <table class="spec"><colgroup><col style="width:26px"><col style="width:21%"><col style="width:34px"><col style="width:12%"><col style="width:8%"><col style="width:10%"><col style="width:8%"><col style="width:8%"><col></colgroup><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th><th>Size mm (W×D×H)</th><th class="n">Weight kg</th><th class="n">Power W</th><th>Mounting</th><th>Space</th><th>Notes</th></tr></thead><tbody>
+  'equipment-spec': {title: 'Equipment Specification List', body: () => `
+    <table class="spec"><colgroup><col style="width:22px"><col style="width:20%"><col style="width:26px"><col style="width:13%"><col style="width:9%"><col style="width:9%"><col style="width:9%"><col style="width:8%"><col></colgroup><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th><th>Size mm (W×D×H)</th><th class="n">Weight kg</th><th class="n">Power W</th><th>Mounting</th><th>Space</th><th>Notes</th></tr></thead><tbody>
       ${EQ.map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td><td>${tx(e.size)}</td><td class="n">${tx(e.kg)}</td><td class="n">${e.w ? fmt(e.w) : e.no === 'iP' ? '—' : tx(e.wText)}</td><td>${tx(e.mount)}</td><td>${e.space ? tx(e.space) : ''}</td><td>${e.note ? tx(e.note) : ''}</td></tr>`).join('')}
     </tbody></table>${SOURCE}`},
 
@@ -186,7 +185,7 @@ const DOCS = {
 };
 
 fs.mkdirSync(SRC, {recursive: true});
-const sheet = (k, d) => `<section class="sheet${d.land ? ' land' : ''}">${head(d.title, k)}${d.body()}</section>`;
+const sheet = (k, d) => `<section class="sheet">${head(d.title, k)}${d.body()}</section>`;
 const html = (title, body) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${title}</title><style>${CSS}</style></head><body>${body}</body></html>`;
 const jobs = Object.entries(DOCS).map(([k, d]) => [k, html(d.title, sheet(k, d))]);
 jobs.push(['booth-documents-all', html('SIGGRAPH Asia 2026 FORUM8 Booth Documents', Object.entries(DOCS).map(([k, d]) => sheet(k, d)).join(''))]);
