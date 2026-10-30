@@ -81,7 +81,7 @@ function plan({eq = true, lan = true, focus = '', h = '120mm'} = {}) {
     <line x1="6700" y1="0" x2="6700" y2="6000"/><line x1="6620" y1="0" x2="6780" y2="0"/><line x1="6620" y1="6000" x2="6780" y2="6000"/><text transform="translate(6660 3000) rotate(90)">6000</text></g>`);
   if (lan === 'dot') LAN.forEach(l => s.push(`<rect class="landot" x="${l.pos[0] - 55}" y="${l.pos[1] - 55}" width="110" height="110"/>`)); // under the pins
   if (eq) EQ.filter(e => e.pos).forEach(e => s.push(`<g class="pin${focus === 'eq' ? ' big' : ''}"><circle cx="${e.pos[0]}" cy="${e.pos[1]}" r="${focus === 'eq' ? 190 : 150}"/><text x="${e.pos[0]}" y="${e.pos[1]}">${e.no}</text></g>`));
-  if (lan && lan !== 'dot') LAN.forEach(l => s.push(`<g class="lan${focus === 'lan' ? ' big' : ''}"><rect x="${l.pos[0] - 200}" y="${l.pos[1] - 120}" width="400" height="240" rx="40"/><text x="${l.pos[0]}" y="${l.pos[1]}">${l.no}</text></g>`));
+  if (lan && lan !== 'dot') LAN.forEach(l => s.push(`<g class="lan${focus === 'lan' ? ' big' : ''}"><rect x="${l.pos[0] - 300}" y="${l.pos[1] - 190}" width="600" height="380" rx="50"/><text x="${l.pos[0]}" y="${l.pos[1] - 75}">${l.no}</text><text class="pt" x="${l.pos[0]}" y="${l.pos[1] + 90}">${l.ports} port${l.ports > 1 ? 's' : ''}</text></g>`));
   return `<svg class="plan" style="height:${h}" viewBox="-700 -600 7700 7500" xmlns="http://www.w3.org/2000/svg">${s.join('')}</svg>`;
 }
 
@@ -123,7 +123,7 @@ tfoot td{background:#eef3f8;font-weight:700}
 .plan .pin circle{fill:#1f4e79;stroke:#fff;stroke-width:24}.plan .pin text{fill:#fff;font-size:170px;font-weight:700;text-anchor:middle;dominant-baseline:central}
 .plan .pin.big text{font-size:210px}
 .plan .lan rect{fill:#ff9f1a;stroke:#15171b;stroke-width:14}.plan .lan text{fill:#15171b;font-size:150px;font-weight:700;text-anchor:middle;dominant-baseline:central}
-.plan .lan.big rect{stroke-width:20}
+.plan .lan.big rect{stroke-width:20}.plan .lan .pt{font-size:120px;font-weight:600}
 .plan .landot{fill:#ff9f1a;stroke:#15171b;stroke-width:12}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:8pt;margin-top:6px;color:#333}.legend i{display:inline-block;width:14px;height:10px;margin-right:4px;vertical-align:-1px;border:1px solid #555}
 table.spec{font-size:7.4pt;table-layout:fixed}table.spec th{font-size:7.2pt;padding:3px 4px}table.spec td{padding:2px 4px;overflow-wrap:anywhere}table.spec td.n{white-space:normal}
