@@ -53,6 +53,7 @@ const lanPorts = LAN.reduce((s, l) => s + l.ports, 0);
 // ---- plan drawing (SVG, 1 unit = 1 mm) ----
 const P = pts => pts.map(p => p.map(v => v.toFixed(0)).join(',')).join(' ');
 const rect = (x1, y1, x2, y2, cls) => `<rect class="${cls}" x="${x1}" y="${y1}" width="${x2 - x1}" height="${y2 - y1}"/>`;
+const TAG_AT = {L1: [2350, 700], L2: [3500, 3150], L9: [950, 2400]}; // tag positions when drawn together with the pins
 function plan({eq = true, lan = true, focus = '', h = '120mm'} = {}) {
   const s = [];
   s.push(rect(0, 0, 6000, 6000, 'carpet'));
@@ -78,10 +79,16 @@ function plan({eq = true, lan = true, focus = '', h = '120mm'} = {}) {
     `<text class="side" transform="translate(6330 3000) rotate(90)">B  RIGHT (aisle)</text>`, `<text class="side" transform="translate(-330 3000) rotate(-90)">C  LEFT (aisle)</text>`);
   // overall dimensions
   s.push(`<g class="dim"><line x1="0" y1="6700" x2="6000" y2="6700"/><line x1="0" y1="6620" x2="0" y2="6780"/><line x1="6000" y1="6620" x2="6000" y2="6780"/><text x="3000" y="6660">6000</text>
-    <line x1="6700" y1="0" x2="6700" y2="6000"/><line x1="6620" y1="0" x2="6780" y2="0"/><line x1="6620" y1="6000" x2="6780" y2="6000"/><text transform="translate(6660 3000) rotate(90)">6000</text></g>`);
-  if (lan === 'dot') LAN.forEach(l => s.push(`<rect class="landot" x="${l.pos[0] - 55}" y="${l.pos[1] - 55}" width="110" height="110"/>`)); // under the pins
-  if (eq) EQ.filter(e => e.pos).forEach(e => s.push(`<g class="pin${focus === 'eq' ? ' big' : ''}"><circle cx="${e.pos[0]}" cy="${e.pos[1]}" r="${focus === 'eq' ? 190 : 150}"/><text x="${e.pos[0]}" y="${e.pos[1]}">${e.no}</text></g>`));
-  if (lan && lan !== 'dot') LAN.forEach(l => s.push(`<g class="lan${focus === 'lan' ? ' big' : ''}"><rect x="${l.pos[0] - 300}" y="${l.pos[1] - 190}" width="600" height="380" rx="50"/><text x="${l.pos[0]}" y="${l.pos[1] - 75}">${l.no}</text><text class="pt" x="${l.pos[0]}" y="${l.pos[1] + 90}">${l.ports} port${l.ports > 1 ? 's' : ''}</text></g>`));
+    <line x1="6700" y1="0" x2="6700" y2="6000"/><line x1="6620" y1="0" x2="6780" y2="0"/><line x1="6620" y1="6000" x2="6780" y2="6000"/><text transform="translate(6770 3000) rotate(90)">6000</text></g>`);
+  // LAN tags: drop point (dot) plus a tag with the port count; tags that would sit on a pin are moved aside with a leader line
+  if (lan) LAN.forEach(l => {const [x, y] = l.pos, [tx, ty] = eq && TAG_AT[l.no] || l.pos;
+    if (tx !== x || ty !== y) s.push(`<line class="lead" x1="${x}" y1="${y}" x2="${tx}" y2="${ty}"/>`);
+    s.push(`<rect class="landot" x="${x - 55}" y="${y - 55}" width="110" height="110"/>`);
+    s.push(`<g class="lan${focus === 'lan' ? ' big' : ''}"><rect x="${tx - 300}" y="${ty - 190}" width="600" height="380" rx="50"/><text x="${tx}" y="${ty - 75}">${l.no}</text><text class="pt" x="${tx}" y="${ty + 90}">${l.ports} port${l.ports > 1 ? 's' : ''}</text></g>`);});
+  // equipment pins with the power of that position beside them
+  if (eq) EQ.filter(e => e.pos).forEach(e => {const [x, y] = e.pos, r = focus === 'eq' ? 190 : 150;
+    s.push(`<g class="pin${focus === 'eq' ? ' big' : ''}"><circle cx="${x}" cy="${y}" r="${r}"/><text x="${x}" y="${y}">${e.no}</text></g>`);
+    if (e.w) s.push(`<text class="watt" x="${x + r + 40}" y="${y}">${fmt(e.w * e.qty)} W</text>`);});
   return `<svg class="plan" style="height:${h}" viewBox="-700 -600 7700 7500" xmlns="http://www.w3.org/2000/svg">${s.join('')}</svg>`;
 }
 
@@ -124,9 +131,19 @@ tfoot td{background:#eef3f8;font-weight:700}
 .plan .pin.big text{font-size:210px}
 .plan .lan rect{fill:#ff9f1a;stroke:#15171b;stroke-width:14}.plan .lan text{fill:#15171b;font-size:150px;font-weight:700;text-anchor:middle;dominant-baseline:central}
 .plan .lan.big rect{stroke-width:20}.plan .lan .pt{font-size:120px;font-weight:600}
+.plan .lead{stroke:#15171b;stroke-width:12;stroke-dasharray:30 20}
+.plan .watt{font-size:125px;font-weight:700;fill:#c0392b;dominant-baseline:central;paint-order:stroke;stroke:#fff;stroke-width:34px;stroke-linejoin:round}
 .plan .landot{fill:#ff9f1a;stroke:#15171b;stroke-width:12}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:8pt;margin-top:6px;color:#333}.legend i{display:inline-block;width:14px;height:10px;margin-right:4px;vertical-align:-1px;border:1px solid #555}
 table.spec{font-size:7.4pt;table-layout:fixed}table.spec th{font-size:7.2pt;padding:3px 4px}table.spec td{padding:2px 4px;overflow-wrap:anywhere}table.spec td.n{white-space:normal}
+.pb{break-before:page}
+h2.cont{font-size:11pt;margin:0 0 6px;color:#1f4e79}
+.key{display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;margin-top:8px;font-size:7.8pt;line-height:1.35}
+.key span{display:flex;gap:6px;align-items:baseline}.key em{margin-left:auto;font-style:normal;font-weight:700;white-space:nowrap}
+.key .kn,.key .kl{flex:none;min-width:22px;text-align:center;border-radius:3px;font-size:7.4pt;padding:0 3px}
+.key .kn{background:#1f4e79;color:#fff}.key .kl{background:#ff9f1a;color:#15171b}
+.key span:has(.kn) em{color:#c0392b}
+.key .wide{grid-column:1/-1}.key .tot{border-top:1px solid #b9bec6;padding-top:3px;margin-top:2px;font-weight:700}
 footer.src{margin-top:8px;font-size:7.6pt;color:#666}
 `;
 const head = (ttl, no) => `<header><h1>${ttl}</h1>
@@ -134,12 +151,19 @@ const head = (ttl, no) => `<header><h1>${ttl}</h1>
 const SOURCE = `<footer class="src">Source: Exhibition equipment spec list (30 Oct 2026, draft) / Booth 3D: https://ima2daka2mi-sys.github.io/siggraph-asia-2026-booth/</footer>`;
 const legend = `<div class="legend"><span><i style="background:#8a8d93"></i>Wall H2700</span><span><i style="background:#dfe3e8"></i>Stand H1000</span>
   <span><i style="background:#efe2c7"></i>Table</span><span><i style="background:#e5efd9"></i>VR360 area</span><span><i style="background:#1f4e79"></i>Equipment no.</span>
-  <span><i style="background:#ff9f1a"></i>Wired LAN</span><span><i style="background:#c0392b"></i>Pole partition</span></div>`;
+  <span><i style="background:#ff9f1a"></i>Wired LAN (ports)</span><span><b style="color:#c0392b">0 W</b> Power at that position</span><span><i style="background:#c0392b"></i>Pole partition</span></div>`;
+
+// a full A4 page for the plan: pins carry their power, LAN tags their ports, and a key lists every number
+const KEY = `<div class="key">${EQ.filter(e => e.pos).map(e => `<span><b class="kn">${e.no}</b>${tx(e.name)}<em>${e.w ? fmt(e.w * e.qty) + ' W' : tx(e.wText)}</em></span>`).join('')}
+  ${LAN.map(l => `<span><b class="kl">${l.no}</b>${tx(l.name)}<em>${l.ports} port${l.ports > 1 ? 's' : ''}</em></span>`).join('')}
+  ${EQ.filter(e => !e.pos && e.w).map(e => `<span class="wide"><b class="kn">${e.no}</b>${tx(e.name)} ×${e.qty} (${tx(e.mount).toLowerCase()}, not shown on the plan)<em>${fmt(e.w * e.qty)} W</em></span>`).join('')}
+  <span class="wide tot"><b>Total</b>${fmt(totalW)} W (≈ ${(totalW / 230).toFixed(1)} A at 230 V) · ${totalOut} outlets · ${lanPorts} LAN ports</span></div>`;
+const planPage = (title, focus, first = false) => `${first ? '' : '<div class="pb"></div>'}<h2 class="cont">${title} — plan with power (W) and LAN ports</h2>${plan({focus, h: '178mm'})}${legend}${KEY}`;
 
 const DOCS = {
   'floor-plan': {title: 'Floor Plan', body: () => `
-    ${plan({focus: 'eq', lan: 'dot', h: '146mm'})}${legend}
-    <div class="wrap">
+    ${planPage('Floor Plan', 'eq', true)}
+    <div class="pb"></div><div class="wrap">
     <div><table><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th></tr></thead><tbody>
       ${EQ.filter(e => e.pos).map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td></tr>`).join('')}
       <tr><td class="no" style="background:#ff9f1a">L</td><td>Wired LAN: ${LAN.length} drops / ${lanPorts} ports (see Wired LAN Locations)</td><td class="n">${lanPorts}</td></tr>
@@ -156,13 +180,14 @@ const DOCS = {
     <ul class="notes"><li>Extension cords and power strips are not permitted: each location needs its own outlets (guide: one outlet per device).</li>
       <li>Power figures are catalog estimates; final values will be updated once equipment is confirmed.</li>
       <li>The VR motion seat alone draws 220 VAC 9 A; a dedicated circuit is recommended.</li>
-      <li>See the Floor Plan for the position of each equipment number.</li></ul>${SOURCE}`},
+      <li>Page 2 shows each position's power (red, W) and wired LAN ports (orange).</li></ul>${SOURCE}
+    ${planPage('Power List', 'eq')}`},
 
   'lan-locations': {title: 'Wired LAN Locations', body: () => `
-    <div class="chips"><div class="chip"><b>${LAN.length}</b><span>Drop locations</span></div><div class="chip"><b>${lanPorts}</b><span>Total ports</span></div>
+    ${planPage('Wired LAN Locations', 'lan', true)}
+    <div class="pb"></div><div class="chips"><div class="chip"><b>${LAN.length}</b><span>Drop locations</span></div><div class="chip"><b>${lanPorts}</b><span>Total ports</span></div>
       <div class="chip"><b>${LAN.reduce((s, l) => s + (l.ipad || 0), 0)}</b><span>of which for iPads</span></div></div>
-    ${plan({eq: false, focus: 'lan', h: '100mm'})}
-    <table style="margin-top:8px"><thead><tr><th>No.</th><th>Location / devices</th><th class="n">Ports</th><th>Notes</th></tr></thead><tbody>
+    <table><thead><tr><th>No.</th><th>Location / devices</th><th class="n">Ports</th><th>Notes</th></tr></thead><tbody>
       ${LAN.map(l => `<tr><td class="no">${l.no}</td><td>${tx(l.name)}</td><td class="n">${l.ports}</td><td>${l.ipad ? `${l.ipad} for iPad` : ''}</td></tr>`).join('')}
     </tbody><tfoot><tr><td></td><td>Total</td><td class="n">${lanPorts}</td><td></td></tr></tfoot></table>
     <ul class="notes"><li>Drop positions are approximate; route cables along walls or under tabletops near stands and tables.</li></ul>${SOURCE}`},
@@ -170,7 +195,8 @@ const DOCS = {
   'equipment-spec': {title: 'Equipment Specification List', body: () => `
     <table class="spec"><colgroup><col style="width:22px"><col style="width:20%"><col style="width:26px"><col style="width:13%"><col style="width:9%"><col style="width:9%"><col style="width:9%"><col style="width:8%"><col></colgroup><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th><th>Size mm (W×D×H)</th><th class="n">Weight kg</th><th class="n">Power W</th><th>Mounting</th><th>Space</th><th>Notes</th></tr></thead><tbody>
       ${EQ.map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td><td>${tx(e.size)}</td><td class="n">${tx(e.kg)}</td><td class="n">${e.w ? fmt(e.w) : e.no === 'iP' ? '—' : tx(e.wText)}</td><td>${tx(e.mount)}</td><td>${e.space ? tx(e.space) : ''}</td><td>${e.note ? tx(e.note) : ''}</td></tr>`).join('')}
-    </tbody></table>${SOURCE}`},
+    </tbody></table>${SOURCE}
+    ${planPage('Equipment Specification List', 'eq')}`},
 
   'wall-mount': {title: 'Wall-Mounted Screens', body: () => {
     const rows = EQ.filter(e => MOUNT[e.no]);
@@ -181,7 +207,8 @@ const DOCS = {
     <ul class="notes"><li>Centre height is measured from the floor (carpet) to the screen centre; the top edge is approximate (screen height plus bezel).</li>
       <li>Walls are H2700; reinforcement (backing) is needed at each mounting position.</li>
       <li>One power outlet behind each screen.</li></ul>
-    ${plan({lan: false, focus: 'eq', h: '92mm'})}${SOURCE}`;}},
+${SOURCE}
+    ${planPage('Wall-Mounted Screens', 'eq')}`;}},
 };
 
 fs.mkdirSync(SRC, {recursive: true});
@@ -192,6 +219,7 @@ jobs.push(['booth-documents-all', html('SIGGRAPH Asia 2026 FORUM8 Booth Document
 for (const [k, h] of jobs) {
   const src = path.join(SRC, k + '.html');
   fs.writeFileSync(src, h);
-  execFileSync(EDGE, ['--headless=new', '--disable-gpu', '--no-pdf-header-footer', `--print-to-pdf=${path.join(DIR, k + '.pdf')}`, pathToFileURL(src).href], {stdio: 'ignore'});
+  // own profile so a running Edge window can't hold the headless print; give up after 90 s
+  execFileSync(EDGE, ['--headless=new', '--disable-gpu', '--no-first-run', `--user-data-dir=${path.join(SRC, '.edge')}`, '--no-pdf-header-footer', `--print-to-pdf=${path.join(DIR, k + '.pdf')}`, pathToFileURL(src).href], {stdio: 'ignore', timeout: 90000});
   console.log(k + '.pdf', fs.statSync(path.join(DIR, k + '.pdf')).size);
 }
