@@ -265,10 +265,11 @@ let holoCore;
  holoCore=new THREE.Mesh(new THREE.IcosahedronGeometry(.12,1),new THREE.MeshBasicMaterial({color:0xd9a6ff,wireframe:true}));holoCore.position.set(0,cy,0);g.add(holoCore);
  label(['3Dホログラフィックディスプレイ','3D holographic display'],420,1780,2.1);}
 
-// pole partition
-[[450,3690],[1450,3690]].forEach(([x,y])=>{const [X,Z]=W(x,y);const b=mesh(new THREE.CylinderGeometry(.17,.17,.03,32),mat.grey);b.position.set(X,.015,Z);const p=mesh(new THREE.CylinderGeometry(.03,.03,.95,16),mat.metal);p.position.set(X,.475,Z);});
-box(450,3680,1450,3700,.84,.05,mat.red);
-label(['ポールパーテーション','Pole partition'],950,3690,1.2);
+// pole partitions: back pair (y 3690) and front pair (y 5800), either side of the VR360 area
+function polePair(y){[450,1450].forEach(x=>{const [X,Z]=W(x,y);const b=mesh(new THREE.CylinderGeometry(.17,.17,.03,32),mat.grey);b.position.set(X,.015,Z);const p=mesh(new THREE.CylinderGeometry(.03,.03,.95,16),mat.metal);p.position.set(X,.475,Z);});
+ box(450,y-10,1450,y+10,.84,.05,mat.red);
+ label(['ポールパーテーション','Pole partition'],950,y,1.2);}
+polePair(3690);polePair(5800);
 
 // VR360 simulator area
 box(100,4160,2600,5560,0,.12,mat.grey);box(180,4240,2520,5480,.12,.01,mat.green);
