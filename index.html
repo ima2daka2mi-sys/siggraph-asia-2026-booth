@@ -430,6 +430,29 @@ const TAG='Real World Meets Interactive Technology';
  glabel('pylon',['パイロン（STOCK角）600×600×H2250','Pylon on STOCK corner 600×600×H2250'],3300,1200,5.3);
  glabel('pylon',['パイロン（ForumSync壁 正面端）510×600×H2250','Pylon on ForumSync wall end 510×600×H2250'],2925,5700,5.3);}
 
+// 4) Logo lantern frame: a back-lit square band around the whole booth (3.8-4.95 m); 2.7-3.8 m is open, posts only
+const F8_LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAABLCAYAAABeMdGUAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAADJFJREFUeNrsnftV4zoQxrUc/r/cChwquKGCTSogVEA4KYCkgpAKIAVwkq2AUAHeCjZUcE0FN1vB3oxHJo7xQ7Lkh5zvd47h7BLwQ9Z8MxppJAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKBmvjV+Bd5kvP/6z/54FR/PPpoEAAAgIHmi0dt/JeG43R+92E+C/bHcH+u9mOzQPAAAAAGJhGMgRWOs8On1/viBqAQAAE5VQLzJxf7raH/ME9FGBAnEz5RoBFEJAACcpIB4k/7+670Uj4uMCGO5F4WtRoSCqAQAADorIJwUJxEYlI4mOGoZSwFKi0q28u9sEJUAAIDLAnJIit9nRBu+jDY2Jf52XlSyC0UkGckAAABouYB4k5E07qMM476Wxj2wIFKISgAAwGkBKTbkJBaLSg05ohIAAHBIQA5J8XHGJyjaqDfBjagEAABaKiCHKbhkoPsZ0cYPwUnxoNE7QVQCAAAtERBv8iiNcVZSnKKNdevuSC0qmZWKlA6TBVwjSG0rzmH1Hbj+beYEDJ7113PgHnZhv8lzYNTupVlnjR21QcGn/M/+pdc+m9Y5eHp9xNeyKzyqM2pdX+P7UBqxOc/52dRJL55v/Ck80qOSvuwAfom/Th1h7qCA+IKHGONGYOWI4Y2uOZDCnxSSWwWD5sJ9qN6LLyP/phgo9gG/RPtc75/PsDXDzWzgVxlOdNF9iwJHYd7q/udN1vI9zW2LM01lenVsCIiu9b3hDte2F4M685tT4nEQ7xfpEbpMdB+PeBm/EBnstoxkvGmKR/Hf9CYvjjhvJHL/ShEtFYGkeR4D6UG1I++R7znkrYI/VfG4CI2X26z29+F3YFLEdH8fv/f38YAX84hRKK4fz7PG24cdUB2K7OGLU9Ey2843GRVuTQUk7kHNw8ObbATnQjaN32pxwh90Q1CjHNdTB9qD+xAmdqSJ63ujOVbbwu5NHhwTj3h/o4jpypaAJA3SqNGohBPbc0QbSnzv0H08deReyOG5w6uZGmluaxdXs4kl6Ul0dm7vHW6Lfpi3SRH0c0snqD8qya+5BbLbqQt0yVEYQ0AyoeGTq9qcUhYP0yFev6OR/72IT8SRnFVwIm4Eb0IJmKlUX3vRBo2PepP/ZFgF8QDuwxMbQLqj8GLVhmS3QZUJ/OsOtEVqVHZe4QnJ230MD54SVn6Ven7NLWCXTegRN5GkZkOxst7OH8/fGrqXaC0VMDNc9E7c1HCeZQXRh2rETFHWVUP9birf1WJHJ2HDz2u6xHF4cK5EbXOo7G1vXWDo8J4l743NcKLzepNlJxwFfoZ3MrroCWA2qkFJ6CpnrDW/KDpocGZh6TzTec0XWhyV6G17C0DbCRQEBLOwipmHDqhtQ8/rcWzN2mxndQ6777I1AdnKjlF2fDIZlRD3Fry1QMDjA22Ax9UHhf0IhT5VebQ6M4uHbqYWr+9njq0cOP7sd2mTGUwE5DUMKXk2lMnaiygqMeUw+8ub/GnBi16tUfh4HsKeKBuKhwbO+pdiFL1EAykTLWy7NBZdHumoqxrAq2WhquK5qthXYVNAIkNGIdu6odXfgWjnqngsZGwXba1f5nd8yKNKETGtmUW/a9sJCzJspB9WT8iPQqjKx1uL7dWiGgE5PCQK0yhpOBPVrwj3hdl4Y4B+CBqG+ssNHkPIk8iu/J1l8B6FyfqZ+lf/z0Rxba1Ba9snw0G3n0Rnr6CKqMTWFrkBvD7QAoO5QO7jk98yGtApXkj50w/tmVns5esYasq5XCn+3iLzekiw2LleOdY267y6ZGeVnpoe2sczeQmX0lswMfw34Y2YD1Ut0F9Bw6DkTnpEoFtAca5Vndmb6C4+3gmbVQLYcb1yytFh+y2aEZB4VEIP7+P5Unoa1UQAFPHwS5L9QiD6AM0zFjyODyH5amB1HbxVUclxaRvGQn9pwI3Voa7D4lJ33lOL5dyT3O7/eBTiBBoviS8oh8HhHDWo+dRd9bpYmG8P2gJ1zBdhP5HruojQzE5Pw9hH5U7yV3FHk33KX5eNdnoTbk2wqaSce0RPmBRQPN45cCx0xwZ5pfq90E2+kaKifDZoB4OsKqcnzkwaWlVj25PG+SrD69c12l/X5rAnXmRngkxnmqeSuzg7M9pD6NK2gMQxLeuu/lmzKrwXMuStettMEigkSNvj1X5r5LyH3R/zuBdVDem6215U0oZmqP3SdA5XR2P2h10FdQy3nxFtPAqVJLoQDxkiplLOnRzq3w088euCZ9Srupx7WlSyFiYFFNM6Guc3ehaGDqapDW3Tg3K3Fhaol35oYDAjKykiQejosYioMpYbUUV7xaw0xYMc2SqmVquMkviN7cJIq/uLy9jXVs49/tDeLJZ1HwmUKAFdFRGQJiK8tkyPx3BmFte40inKuROcNK9CyNu+kduu7Dtaxyysngz//gsjCOx9AABQFxHyenV3n1wJ/dIhdxXmRrsx2y7Fdp/VfAnxqATRBMhyOEB7jZHXgIjQ0M6mwmc0q3wH1Y5ikgPZGbzMPXkE8t9beZiE8vS3OIEvxL9o2tJQrokKATaRzFMtQHjKPCqte+he+9xJm2H73texnEmzjlNzozO3GjbWmoAspVdgXqqEZ10MRbkd3HyRrIvF61NAeQ93isfQ6ghtfnJ3zTaCRESn3EkR26KV1tbOUzyDqyeKZ+w1SWo59zPDRk2WKjEZQ9RJkkdrSC7DKXeYR68TNQLgqojYLEBJxrCuRZw/OvD0KyrnHnkHZQoo6i8G/BptAB3eRTf2le/qQtCuCHxQoYj4MhJZGT7nm9qmTnMhRV+4valUaomZs0oelloBRXoBKFcxVRSPO0Qb1XgRDvLa0fbpwn3tKn/PTMuScNK8iXLurjoIi6yF4WcVNnKygKKf+ERP07gFAtgYAnhy/C42nV2kyYbR9ehqWYtnz05qmfdg0YgTeljT4pqIrPNK5lc/jZfLLd9nhG+BDI3+tvJgi6vxAn7erhrgMgvLXGPosIistffnMONG81nVfX1JEdnI9nXBGd5Jsc3tb+eVnJpXnY9FdqXd4+KLnDcZG5wvOhdW9KpEhvQSu/XMttKzXZ9E+/CMRBravRVurIvRL6Zq71mpzswqs99IVZHIpex/19KxvmhZX3sVivUMv+UY5T8KoeBD4ncG8qUfZ0Qb6YUW1YrODY+GLspV482+dgAAAFqYRyC60Yb5+caifDVeAAAANQjIQopClnfvyXxD2nTd7GijPLRC+kXY2Vsd+4EAAIAhxfsk6Hn8viizTkNtCMuUctcGAACgpIAcjHxPpOccokWEy9LRRnUCYn5tAAAADAXka1RCNe5/WvHo7QsIog0AqoAcyfRJMDtsFX16lEuim68ErQJEG0DHEKrscS1qWbTImx/lTafepu5Wx2usKC9Yz6xCfmZv4W6jx9fzJp22IV4sCIhrINoAZVDZ45qckr9bfA/fPwXGLLrP2gf8q3iw6L7j9QEuC0hUb2eBaAOUZFYQgbwVGOY/1jz/8nthD+Tv502RD8RxIbzv8vcWic/kiQdFOlGFhzs4a8BVAeEVyVwPCaXJgYnR3hZ42wfPnr34QWoE4E0eQgNc1qjy76vs75FcSEvi1xdFNeTYwXpInG+gJHx8Drq2qXTahjnPbRDuNMrXg2FkCEjroo0lknSgJqId2n7K7z1xGC4SscilJ7//FTO6RfmMuHFPKzL6VaRYvJIOU1SW/zUmcnNhq9IsT5SZx+6xqP9F1zcND28S9VkfrxMEBNEGOA0OlRWCz6Gh+KQR/nmUU/hhPITFBtbPuZ5fIn2G07X8vjmKAji3MzS497k4bO4WTUwZK/VXEsRD8dRReFCtKgx5QUAQbYATEY8oUXyX8/NejiDMLF7PSEYz65TrGB05V7zREht7ih7KG+2R7Id3si/qFTpl0d3EIhj0YwhI5QSfLyyiDdCMeETeOxvsZGKaf/4i/0Ue/q+Kr2cqDTD1h1mKkSeSG1AtpLGfizLT7LnvXSauo2xktRbtm+oPOikgnHDDywbqFo2+NMbX4pC3oBzCU+JzJCxk0H3Bs5CC0oY1X8AI+h6Vcad+cbz1Kl9LFBHcyn8nZ5P1PqOQrKraX/9/iHwFcDUCAaAJBtJbJ0NNopE1e4g8+3dpkF/k0JJt4oVCtyJ7umxfXu8u9tko2b+TP3uRIrQWGXtZZ4wCAAABAUCRteBFdNuCCHkXi5CXghfSkcG1uYHSUArINncYt2jBH0cXNyJKzJuvUwlE8S6WCwgQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1ML/AgwA1X/o96DYrM4AAAAASUVORK5CYII=';
+{const g=grp('frame');const B=3.8,HB=SIGN_TOP-3.8,T=300;
+ const body=M(0xf4f6f8,{roughness:.6});
+ [[0,0,6000,T],[0,6000-T,6000,6000],[0,T,T,6000-T],[6000-T,T,6000,6000-T]].forEach(r=>g.attach(box(...r,B,HB,body)));
+ // outer faces: logo centred on a lit white face; inner faces: tagline. Textures redraw once the logo image loads.
+ const outC=document.createElement('canvas');outC.width=3000;outC.height=575;const outT=new THREE.CanvasTexture(outC);outT.colorSpace=THREE.SRGBColorSpace;outT.anisotropy=8;
+ const drawOut=img=>{const x=outC.getContext('2d'),w=outC.width,h=outC.height;const gr=x.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#ffffff');gr.addColorStop(1,'#eef3fa');x.fillStyle=gr;x.fillRect(0,0,w,h);
+   x.fillStyle='#1f4e79';x.fillRect(0,h-18,w,18);if(img){const lh=h*.56,lw=lh*img.width/img.height;x.imageSmoothingQuality='high';x.drawImage(img,(w-lw)/2,(h-lh)/2-6,lw,lh);}outT.needsUpdate=true;};
+ drawOut(null);const img=new Image();img.onload=()=>drawOut(img);img.src=F8_LOGO;
+ const inT=litTex(3000,575,(x,w,h)=>{x.fillStyle='#1f4e79';x.fillRect(0,0,w,18);x.textAlign='center';x.font='700 120px "Noto Sans JP",sans-serif';x.fillText(TAG,w/2,h/2+6);});
+ const mat=t=>new THREE.MeshStandardMaterial({map:t,emissive:0xffffff,emissiveMap:t,emissiveIntensity:.4,roughness:.6});
+ const sides=[[3000,0,0,-1,6],[3000,6000,0,1,6],[0,3000,-1,0,6],[6000,3000,1,0,6]];   // centre, outward normal, length (m)
+ sides.forEach(([cx,cy,nx,ny,L])=>{const [X,Z]=W(cx,cy);
+   const o=new THREE.Mesh(new THREE.PlaneGeometry(L,HB),mat(outT));o.position.set(X+nx*.006,B+HB/2,Z+ny*.006);o.rotation.y=Math.atan2(nx,ny);g.add(o);
+   const [iX,iZ]=W(cx-nx*T,cy-ny*T);const i=new THREE.Mesh(new THREE.PlaneGeometry(L-2*T/1000,HB),mat(inT));i.position.set(iX-nx*.006,B+HB/2,iZ-ny*.006);i.rotation.y=Math.atan2(-nx,-ny);g.add(i);});
+ // posts 2.7 -> 3.8 on the existing structures
+ [[3050,50],[5950,50],[5950,1450],[254,237],[2925,5850]].forEach(([x,y])=>post(g,x,y,2.7,B,120));
+ // floor-standing posts only where there is no structure below the frame
+ [[150,5850],[5850,5850],[150,3000]].forEach(([x,y])=>{post(g,x,y,0,B,120);const [X,Z]=W(x,y);const bp=new THREE.Mesh(new THREE.BoxGeometry(.3,.012,.3),steel);bp.position.set(X,.018,Z);g.add(bp);});
+ glabel('frame',['ロゴ行燈フレーム 6000×6000×H1150（天端4950）','Logo lantern frame 6000×6000×H1150 (top 4950)'],3000,3000,5.3);
+ glabel('frame',['支柱のみ 2.7〜3.8m','Posts only, 2.7–3.8 m'],150,5850,3.25,'');}
+
 const SPEC={
  delta:['デルタ行燈：STOCK角・F8VPS壁・ForumSync壁の3か所に立てた支柱を頂点に、直線パネル3枚で三角形を組む案。各パネルは支柱から支柱へ渡す梁になるので軽く、施工も簡単。外側3面にFORUM8ロゴ、内側にタグライン。H900、天端4950。',
   'Delta lantern: three straight panels form a triangle whose corners sit on posts from the STOCK corner, the F8VPS wall and the ForumSync wall. Each panel spans post to post like a beam, so it is light and simple to build. FORUM8 logo on the three outer faces, tagline inside. H900, top 4950.'],
@@ -437,9 +460,11 @@ const SPEC={
   'Voxel logo: FORUM8 built from glowing cubes on a 3000×900 board, raised on three posts from the STOCK front wall. A CG / SIGGRAPH-style look with the tagline along the bottom and a plain logo on the back. Top 4950.'],
  pylon:['ツインパイロン：STOCKの角と、ForumSync壁の正面端の2か所に、各面にFORUM8を入れた縦型の光る柱（H2250）を載せる案。奥と手前の対角に置くので四方の通路から見え、既存の壁に載せるだけで支持が簡単。天端4950。',
   'Twin pylons: two upright light columns (H2250) with FORUM8 on every face — one on the STOCK corner, one on the front end of the ForumSync wall. Set diagonally front and back, they read from all four aisles and simply sit on existing walls. Top 4950.'],
+ frame:['ロゴ行燈フレーム：ブース外周6000×6000を□形の行燈（H1150・奥行300、天端4950）でぐるりと囲み、内側から照らす案。外側4面の中央にFORUM8ロゴ、内側にタグライン。2.7〜3.8mは支柱だけの抜けた空間で、支柱はSTOCK・F8VPS壁・ForumSync壁の上に立てる。下に造作がない手前の2隅と左辺中央だけ、床から支柱を立てる。',
+  'Logo lantern frame: a square back-lit lantern (H1150, depth 300, top 4950) runs around the whole 6000×6000 booth, with the FORUM8 logo centred on all four outer faces and the tagline on the inner faces. Between 2.7 and 3.8 m there are only posts: they stand on STOCK, the F8VPS wall and the ForumSync wall, with floor-standing posts only at the two front corners and mid-left, where there is no structure below.'],
  none:['','']};
-const SIGN_OPTS=[['none',['看板なし','No sign']],['delta',['① デルタ行燈（おすすめ）','1 Delta lantern (recommended)']],['voxel',['② ボクセル・ロゴ','2 Voxel logo']],['pylon',['③ ツインパイロン','3 Twin pylons']]];
-let signKey='none';
+const SIGN_OPTS=[['none',['看板なし','No sign']],['frame',['④ ロゴ行燈フレーム（□囲い）','4 Logo lantern frame (square)']],['delta',['① デルタ行燈','1 Delta lantern']],['voxel',['② ボクセル・ロゴ','2 Voxel logo']],['pylon',['③ ツインパイロン','3 Twin pylons']]];
+let signKey='frame'; // the square logo frame is shown on load
 function showSign(k){signKey=k;Object.keys(signs).forEach(s=>{signs[s].visible=s===k;signLabels[s].forEach(l=>{l.visible=s===k;l.element.style.display=s===k?'':'none';});});
  const d=document.getElementById('sign-desc');d.hidden=k==='none';d.textContent=tr(SPEC[k]);
  const sel=document.getElementById('sign-sel');if(sel)sel.value=k;
@@ -498,7 +523,7 @@ const LAN=[
  {no:'L2',name:['ForumSync 展示台（ノートPC×2＋iPad）','ForumSync stand (2 laptops + iPad)'],ports:3,ipad:1,pos:sMid,tag:1.35,th:1.0,view:[Math.SQRT1_2,-Math.SQRT1_2],d:2.4},
  {no:'L3',name:['体験コーナー 85インチ側の列（ノートPC×3）','Driving corner, 85" side row (3 laptops)'],ports:3,pos:[4400,4825],tag:1.4,th:1.0,view:[1,.35],d:3.2},
  {no:'L4',name:['体験コーナー 通路B側の列（ノートPC×3）','Driving corner, aisle B row (3 laptops)'],ports:3,pos:[5650,4825],tag:1.4,th:1.0,view:[1,.2],d:2.6},
- {no:'L5',name:['VR360 シミュレータ用PC','VR360 Simulator PC'],ports:1,pos:[2450,4300],tag:.75,th:.4,view:[1,-.4],d:2.6},
+ {no:'L5',name:['VR360 シミュレータ用PC','VR360 Simulator PC'],ports:1,pos:[2450,4300],tag:1.75,th:1.2,view:[1,-.4],d:2.6},
  {no:'L6',name:['VRモーションシート用PC（横のハイテーブル）','VR motion seat PC (high table beside it)'],ports:1,pos:[4050,2250],tag:1.4,th:1.0,view:[.3,1],d:2.6},
  {no:'L7',name:['プレゼンコーナー 講師用','Presentation corner – presenter'],ports:1,pos:[3580,5550],tag:1.4,th:1.0,view:[1,.3],d:2.6},
  {no:'L8',name:['STOCK（倉庫）内','Inside STOCK'],ports:1,pos:[5650,350],tag:.75,th:.2,view:[0,1],d:2.2,up:5.5},
@@ -572,7 +597,7 @@ tog('t-label',v=>stage.classList.toggle('hide-labels',!v));
 tog('t-lan',v=>showGroup(lanGroup,v));
 tog('t-dim',v=>showGroup(dimGroup,v));
 showGroup(dimGroup,false); // height markers start off
-showSign('none');
+showSign(signKey);
 tog('t-rot',v=>{controls.autoRotate=v;controls.autoRotateSpeed=0.8;});
 
 function resize(){const w=innerWidth,h=innerHeight;placePanel();renderer.setSize(w,h);composer.setSize(w,h);labelR.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
