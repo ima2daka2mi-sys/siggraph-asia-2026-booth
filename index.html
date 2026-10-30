@@ -43,6 +43,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .pin.on span{background:var(--accent);transform:scale(1.35)}
 /* wired LAN tags and the 2700 height markers */
 .lan{pointer-events:auto;cursor:pointer}
+.occl{visibility:hidden}
 .lan span{display:block;padding:2px 6px;border-radius:3px;background:#ff9f1a;color:#1b1d22;font:800 10px/14px var(--ui);letter-spacing:.03em;border:1px solid #fff3;box-shadow:0 1px 5px rgba(0,0,0,.5);white-space:nowrap;transition:transform .15s}
 .lan:hover span{transform:scale(1.1)}
 .lan.on span{background:#fff;transform:scale(1.25)}
@@ -519,9 +520,9 @@ const EQ=[
 ];
 const totalW=EQ.reduce((s,e)=>s+e.w*e.qty,0), maxW=Math.max(...EQ.map(e=>e.w*e.qty));
 const fmt=n=>n.toLocaleString('en-US');
-const pins={};let sel=null;
+const pins={},occl=[];let sel=null; // occl: markers hidden when something solid is in front of them
 EQ.forEach(e=>{if(!e.pos)return;const d=document.createElement('div');d.className='pin';d.innerHTML=`<span>${e.no}</span>`;
-  d.onclick=ev=>{ev.stopPropagation();select(e.no,true);};const o=new CSS2DObject(d);const [X,Z]=W(...e.pos);o.position.set(X,e.pin,Z);scene.add(o);pins[e.no]=d;});
+  d.onclick=ev=>{ev.stopPropagation();select(e.no,true);};const o=new CSS2DObject(d);const [X,Z]=W(...e.pos);o.position.set(X,e.pin,Z);scene.add(o);pins[e.no]=d;occl.push(o);});
 
 // ===== wired LAN drops: one per PC location, the presenter, and one inside STOCK =====
 // stand drops sit near the wall edge, behind the iPads
@@ -545,7 +546,7 @@ LAN.forEach(l=>{const [X,Z]=W(...l.pos);
   const drop=new THREE.Mesh(new THREE.CylinderGeometry(.006,.006,l.tag-.1,6),lanMat);drop.position.set(X,(l.tag-.1)/2+.03,Z);lanGroup.add(drop); // cable up to the tag
   const d=document.createElement('div');d.className='lan';const txt=`LAN${l.ports>1?' ×'+l.ports:''}`;
   d.innerHTML='<span></span>';d.firstChild.textContent=l.ipad?`${txt} (${l.ipad} for iPad)`:txt; // same wording in both languages
-  d.onclick=ev=>{ev.stopPropagation();select(l.no,true);};const o=new CSS2DObject(d);o.position.set(X,l.tag,Z);lanGroup.add(o);lanTags[l.no]=d;});
+  d.onclick=ev=>{ev.stopPropagation();select(l.no,true);};const o=new CSS2DObject(d);o.position.set(X,l.tag,Z);lanGroup.add(o);lanTags[l.no]=d;occl.push(o);});
 
 // ===== booth height 2700 marked at four corners =====
 const dimGroup=new THREE.Group();scene.add(dimGroup);
@@ -609,10 +610,19 @@ tog('t-rot',v=>{controls.autoRotate=v;controls.autoRotateSpeed=0.8;});
 
 function resize(){const w=innerWidth,h=innerHeight;placePanel();renderer.setSize(w,h);composer.setSize(w,h);labelR.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
 addEventListener('resize',resize);resize();
+// marker occlusion: ray from the camera to each LAN tag / number pin; hide it if an opaque visible mesh is in between
+const occluders=[];
+scene.traverse(o=>{if(!o.isMesh)return;for(let p=o;p;p=p.parent)if(!p.visible||p===lanGroup||p===dimGroup)return;
+  const m=o.material;if(m.transparent||m.wireframe)return;occluders.push(o);});
+const ray=new THREE.Raycaster(),_p=new THREE.Vector3(),_d=new THREE.Vector3();
+function updateOcclusion(){occl.forEach(o=>{o.getWorldPosition(_p);_d.subVectors(_p,camera.position);const dist=_d.length();
+  ray.set(camera.position,_d.normalize());ray.far=Math.max(0,dist-.06);o.element.classList.toggle('occl',ray.intersectObjects(occluders,false).length>0);});}
+let frame=0;
 const clock=new THREE.Clock();
 renderer.setAnimationLoop(()=>{if(anim)anim();controls.update();
   const t=clock.getElapsedTime();holoCore.rotation.y=t*.8;holoCore.rotation.x=t*.3;holoCore.position.y=1.565+Math.sin(t*1.5)*.04;
   mat.led.emissiveIntensity=3.5+Math.sin(t*2)*.8;
+  if(frame++%4===0)updateOcclusion();
   composer.render();labelR.render(scene,camera);});
 </script>
 
