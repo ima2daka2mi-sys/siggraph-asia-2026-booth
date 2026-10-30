@@ -244,9 +244,9 @@ band([1950,2750],[3180,3980],330,175,0,1.0,mat.stand);{const n=[Math.SQRT1_2,-Ma
  const lt=screenTex('ForumSync','Demo',195);
  [.25,.75].forEach(s=>laptop(1950+1230*s+n[0]*175,2750+1230*s+n[1]*175,n[0],n[1],1.0,lt));
  tv(2600,3400,n[0],n[1],...IN[50],1.62,screenTex('ForumSync','Digital Twin 50"',195));
- tv(2130,3651,-n[0],-n[1],...IN[43],1.5,screenTex('VR360','43"',120));
+ tv(2130,3651,-n[0],-n[1],...IN[43],1.8,screenTex('VR360','43"',120));
  label(['ForumSync デジタルツイン','ForumSync Digital Twin'],2600+n[0]*700,3400+n[1]*700,1.15,'k');
- label(['43インチTV／VR360用モニター','43" TV / VR360 monitor'],2130-n[0]*500,3651-n[1]*500,1.95);}
+ label(['43インチTV／VR360用モニター','43" TV / VR360 monitor'],2130-n[0]*500,3651-n[1]*500,2.25);}
 tv(3180,5000,1,0,...IN[85],1.45,screenTex('Presentation','85"',215));
 label(['85インチモニター','85" monitor'],3400,5000,2.1);
 
@@ -290,8 +290,8 @@ box(100,4160,2600,5560,0,.12,mat.grey);box(180,4240,2520,5480,.12,.01,mat.green)
  const foot=add(new THREE.Mesh(new THREE.BoxGeometry(.55,.04,.35),dk),0,.5,-.45);foot.rotation.x=.35;}
 label(['VR360 シミュレータ','VR360 Simulator'],1350,4860,2.25,'k');
 
-tv(5000,1500,0,1,...IN[43],1.5,screenTex('Rally VR','43"',0));
-label(['43インチTV（壁掛け）','43" TV (wall-mounted)'],5000,1520,2.05);
+tv(5000,1500,0,1,...IN[43],1.8,screenTex('Rally VR','43"',0));
+label(['43インチTV（壁掛け）','43" TV (wall-mounted)'],5000,1520,2.35);
 // VR motion seat 800×800×1600: black bucket seat on a black actuator base, back toward the wall TV
 {const [X,Z]=W(5000,2250);const bk=M(0x151618,{roughness:.55}),lth=M(0x222326,{roughness:.45});
  const base=mesh(new THREE.BoxGeometry(.8,.5,.8),bk);base.position.set(X,.25,Z);
@@ -477,7 +477,7 @@ function go(k){flyTo(...views[k]);document.querySelectorAll('[id^="v-"]').forEac
 const EQ=[
  {no:1,name:['VR360 シミュレータ','VR360 Simulator'],qty:1,size:'2047×1250×1960',kg:'350',w:2800,mount:['床置き','Floor'],space:['約2.5×1.3 m','approx. 2.5×1.3 m'],
   note:['背面に43インチモニター壁掛け／ポールパーテーションで動線規制','43" monitor wall-mounted behind; pole partition guides visitor flow'],pos:[1350,4860],pin:2.7,th:1.1,view:[-1,0],d:4.5},
- {no:2,name:['VR360用モニター 43インチ','43" monitor for VR360'],qty:1,size:['約960×60×560','approx. 960×60×560'],kg:'9',w:80,mount:['壁掛け','Wall-mounted'],pos:[2130,3651],pin:2.3,th:1.4,view:[-1,.2],d:2.5},
+ {no:2,name:['VR360用モニター 43インチ','43" monitor for VR360'],qty:1,size:['約960×60×560','approx. 960×60×560'],kg:'9',w:80,mount:['壁掛け','Wall-mounted'],pos:[2130,3651],pin:2.6,th:1.7,view:[-1,.2],d:2.5},
  {no:3,name:['VRモーションシート（公道最速体感）','VR motion seat (rally experience)'],qty:1,size:'800×800×1600',kg:['約110（最大荷重150）','approx. 110 (max. load 150)'],w:2000,wNote:'220 VAC 9 A',mount:['床置き','Floor'],
   space:['約1.35×1.4 m','approx. 1.35×1.4 m'],note:['背面の壁に43インチTV（壁掛け）','43" TV wall-mounted on the wall behind'],pos:[5000,2250],pin:2.25,th:1.0,view:[0,1],d:3.5},
  {no:4,name:['3Dホログラフィックディスプレイ（Metavania HoloSync）','3D holographic display (Metavania HoloSync)'],qty:1,size:['75×75 厚み150','75×75, depth 150'],kg:['約1.5','approx. 1.5'],w:200,mount:['床置き','Floor'],
@@ -490,7 +490,7 @@ const EQ=[
  {no:9,name:['85インチモニター（プレゼン）','85" monitor (presentation)'],qty:1,size:['約1900×70×1100','approx. 1900×70×1100'],kg:'55',w:400,mount:['壁掛け','Wall-mounted'],pos:[3180,5000],pin:2.4,th:1.3,view:[1,0],d:4},
  {no:10,name:['体験コーナー（ハンドルコントローラ＋ペダル）','Driving corner (wheel controller + pedals)'],qty:6,size:'—',kg:'—',w:0,wText:['PCからUSB給電','USB-powered from PC'],mount:['天板・足元','Tabletop / floor'],
   note:['バーテーブル 1800×600 H1000 ×2列、1列3セット','Bar tables 1800×600 H1000, 2 rows of 3 sets'],pos:[5025,4825],pin:1.9,th:1.0,view:[1,.35],d:5},
- {no:11,name:['43インチTV（モーションシート用）','43" TV (for motion seat)'],qty:1,size:['約960×60×560','approx. 960×60×560'],kg:'9',w:80,mount:['壁掛け','Wall-mounted'],pos:[5000,1500],pin:2.4,th:1.4,view:[0,1],d:3},
+ {no:11,name:['43インチTV（モーションシート用）','43" TV (for motion seat)'],qty:1,size:['約960×60×560','approx. 960×60×560'],kg:'9',w:80,mount:['壁掛け','Wall-mounted'],pos:[5000,1500],pin:2.7,th:1.7,view:[0,1],d:3},
  {no:'+',name:['ノートPC','Laptop PCs'],qty:12,size:'—',kg:'—',w:120,mount:['各機材の近く','Near each exhibit']}
 ];
 const totalW=EQ.reduce((s,e)=>s+e.w*e.qty,0), maxW=Math.max(...EQ.map(e=>e.w*e.qty));
