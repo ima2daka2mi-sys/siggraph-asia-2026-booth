@@ -1,9 +1,9 @@
-﻿<!doctype html>
-<html lang="ja">
+<!doctype html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>SIGGRAPH Asia 2026 ブース3D</title>
+<title>SIGGRAPH Asia 2026 Booth 3D</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap">
 <style>
@@ -36,30 +36,83 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .lbl{font-family:var(--ui);font-size:11px;font-weight:700;color:#fff;background:rgba(15,17,21,.78);border:1px solid rgba(255,255,255,.18);padding:2px 7px;border-radius:3px;white-space:nowrap;pointer-events:none}
 .lbl.k{background:rgba(63,143,224,.9);border-color:transparent}
 .hide-labels .lbl{display:none}
+/* numbered equipment pins (same numbering as the equipment sheet) */
+.pin{pointer-events:auto;cursor:pointer}
+.pin span{display:block;width:20px;height:20px;border-radius:50%;background:#6b3fa0;color:#fff;font:700 11px/20px var(--ui);text-align:center;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.55);transition:transform .15s,background .15s}
+.pin:hover span{transform:scale(1.15)}
+.pin.on span{background:var(--accent);transform:scale(1.35)}
+/* equipment & power panel */
+.panel{position:fixed;right:max(16px,env(safe-area-inset-right,0px));top:var(--ptop,72px);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(360px,calc(100% - 32px));
+  background:var(--panel);border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;overflow:hidden;backdrop-filter:blur(6px)}
+.panel header{padding:10px 12px 10px;border-bottom:1px solid var(--line)}
+.panel .hd{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.panel h2{margin:0;font-size:13px}
+.panel .x{padding:2px 8px;font-size:14px;color:var(--muted)}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;font-size:10.5px;color:var(--muted)}
+.sum b{display:block;font-size:17px;color:var(--fg);font-variant-numeric:tabular-nums;line-height:1.3}
+.list{overflow:auto;flex:1;padding:4px}
+.row{display:grid;grid-template-columns:22px 1fr auto;gap:4px 8px;align-items:center;width:100%;text-align:left;padding:7px 8px;border-radius:4px}
+.row .no{width:20px;height:20px;border-radius:50%;background:#6b3fa0;color:#fff;font-size:10.5px;font-weight:700;line-height:20px;text-align:center}
+.row .nm{font-size:12px;line-height:1.35}
+.row .nm em{font-style:normal;color:var(--muted);font-size:11px}
+.row .pw{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.row .bar2{grid-column:2/4;height:3px;background:#2b2f38;border-radius:2px;overflow:hidden}
+.row .bar2 i{display:block;height:100%;background:var(--accent)}
+.row.on{background:rgba(63,143,224,.16);border-color:rgba(63,143,224,.6)}
+.row.on .no{background:var(--accent)}
+.detail{grid-column:2/4;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin-top:4px;font-size:11px;color:var(--muted);line-height:1.55}
+.detail b{color:var(--fg);font-weight:400;font-variant-numeric:tabular-nums}
+.panel footer{padding:8px 12px;border-top:1px solid var(--line);font-size:10.5px;color:var(--muted);line-height:1.6}
+.panel footer p{margin:0 0 3px}
+@media (max-width:700px){
+  .panel{top:auto!important;height:50vh;left:max(16px,env(safe-area-inset-left,0px));width:auto}
+  body.panel-open .spec{display:none}
+}
 </style>
 </head>
 <body>
 
 <div id="stage"></div>
 <div class="bar">
-  <div class="title">SIGGRAPH Asia 2026 FORUM8 ブース<small>アイランド 6000×6000 ／ 平面図-8 準拠</small></div>
-  <div class="group" role="group" aria-label="視点">
-    <button id="v-persp" aria-pressed="true">パース</button>
-    <button id="v-a">正面 A</button>
-    <button id="v-b">右 B</button>
-    <button id="v-c">左 C</button>
-    <button id="v-back">背面</button>
-    <button id="v-top">真上</button>
+  <div class="title"><span data-en="SIGGRAPH Asia 2026 · FORUM8 Booth" data-ja="SIGGRAPH Asia 2026 FORUM8 ブース">SIGGRAPH Asia 2026 · FORUM8 Booth</span><small data-en="Island 6000×6000 / based on floor plan rev. 8" data-ja="アイランド 6000×6000 ／ 平面図-8 準拠">Island 6000×6000 / based on floor plan rev. 8</small></div>
+  <div class="group" role="group" aria-label="View">
+    <button id="v-persp" aria-pressed="true" data-en="Perspective" data-ja="パース">Perspective</button>
+    <button id="v-a" data-en="Front A" data-ja="正面 A">Front A</button>
+    <button id="v-b" data-en="Right B" data-ja="右 B">Right B</button>
+    <button id="v-c" data-en="Left C" data-ja="左 C">Left C</button>
+    <button id="v-back" data-en="Back" data-ja="背面">Back</button>
+    <button id="v-top" data-en="Top" data-ja="真上">Top</button>
   </div>
-  <div class="group" role="group" aria-label="表示">
-    <button id="t-label" aria-pressed="true">ラベル</button>
-    <button id="t-rot" aria-pressed="false">自動回転</button>
+  <div class="group" role="group" aria-label="Display">
+    <button id="t-eq" aria-pressed="true" data-en="Equipment & power" data-ja="機材・電力">Equipment &amp; power</button>
+    <button id="t-label" aria-pressed="true" data-en="Labels" data-ja="ラベル">Labels</button>
+    <button id="t-rot" aria-pressed="false" data-en="Auto-rotate" data-ja="自動回転">Auto-rotate</button>
+  </div>
+  <div class="group" role="group" aria-label="Language">
+    <button id="l-en" aria-pressed="true" lang="en">EN</button>
+    <button id="l-ja" aria-pressed="false" lang="ja">日本語</button>
   </div>
 </div>
 <div class="spec">
   <span id="sign-desc" hidden></span>
-  壁・造作 <b>2700</b>・展示台 <b>1000</b>（仮）。ドラッグで回転、ホイール／ピンチで拡大。
+  <span data-en="Walls 2700 · stands 1000 (tentative). Drag to orbit, scroll / pinch to zoom. Click a number for details." data-ja="壁・造作 2700・展示台 1000（仮）。ドラッグで回転、ホイール／ピンチで拡大。番号をクリックで詳細。">Walls 2700 · stands 1000 (tentative). Drag to orbit, scroll / pinch to zoom. Click a number for details.</span>
 </div>
+<aside class="panel" id="panel" aria-labelledby="eq-h">
+  <header>
+    <div class="hd"><h2 id="eq-h" data-en="Equipment & power" data-ja="出展機材・電力">Equipment &amp; power</h2><button class="x" id="eq-x" aria-label="Close">×</button></div>
+    <div class="sum">
+      <div><b id="sum-w"></b><span data-en="Total power" data-ja="合計電力">Total power</span></div>
+      <div><b id="sum-a"></b><span data-en="at 230 V" data-ja="230V換算">at 230 V</span></div>
+      <div><b>22</b><span data-en="Outlets" data-ja="口数">Outlets</span></div>
+    </div>
+  </header>
+  <div class="list" id="eq-list"></div>
+  <footer>
+    <p data-en="Extension cords and power strips are not permitted: each location needs its own outlets (guide: one outlet per device)." data-ja="延長コード・テーブルタップ使用不可：設置位置ごとに口数が必要（口数は1機材1口の目安）。"></p>
+    <p data-en="Power figures are catalog estimates; final values will be updated once equipment is confirmed." data-ja="電力はカタログ値の目安。最終値は機材確定後に更新。"></p>
+    <p data-en="Source: Exhibition equipment spec list (30 Oct 2026, draft)" data-ja="出典：出展機材 仕様一覧（2026/10/30 簡潔版・仮）"></p>
+  </footer>
+</aside>
 
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
@@ -119,7 +172,13 @@ function prism(pts,z0,h,m){const s=new THREE.Shape();pts.forEach((p,i)=>{const [
 function bandPts(p1,p2,th,off=0){const [x1,y1]=p1,[x2,y2]=p2,L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L,nx=uy,ny=-ux,o1=off-th/2,o2=off+th/2;
   return {pts:[[x1+nx*o1,y1+ny*o1],[x2+nx*o1,y2+ny*o1],[x2+nx*o2,y2+ny*o2],[x1+nx*o2,y1+ny*o2]],n:[nx,ny],u:[ux,uy]};}
 function band(p1,p2,th,off,z0,h,m){const b=bandPts(p1,p2,th,off);prism(b.pts,z0,h,m);return b;}
-function label(text,x,y,h,cls=''){const d=document.createElement('div');d.className='lbl '+cls;d.textContent=text;const o=new CSS2DObject(d);const [X,Z]=W(x,y);o.position.set(X,h,Z);scene.add(o);return o;}
+// language: English by default, Japanese via the toggle (or ?lang=ja); 3D label text is [ja, en] or a neutral string
+let lang='en';
+try{lang=new URLSearchParams(location.search).get('lang')||localStorage.getItem('booth-lang')||'en';}catch(e){}
+if(lang!=='ja')lang='en';
+const tr=v=>Array.isArray(v)?v[lang==='ja'?0:1]:v;
+const i18nLabels=[];
+function label(text,x,y,h,cls=''){const d=document.createElement('div');d.className='lbl '+cls;d.textContent=tr(text);if(Array.isArray(text))i18nLabels.push([d,text]);const o=new CSS2DObject(d);const [X,Z]=W(x,y);o.position.set(X,h,Z);scene.add(o);return o;}
 
 function screenTex(title,sub,hue){const c=document.createElement('canvas');c.width=640;c.height=360;const g=c.getContext('2d');
   const gr=g.createLinearGradient(0,0,640,360);gr.addColorStop(0,`hsl(${hue},70%,28%)`);gr.addColorStop(1,`hsl(${hue+30},80%,55%)`);g.fillStyle=gr;g.fillRect(0,0,640,360);
@@ -140,7 +199,7 @@ function laptop(cx,cy,nx,ny,h,tex){const [X,Z]=W(cx,cy);const g=new THREE.Group(
   const sh=new THREE.Mesh(new THREE.BoxGeometry(.34,.22,.012),al);sh.position.y=.11;sh.castShadow=true;lid.add(sh);
   const sc=new THREE.Mesh(new THREE.PlaneGeometry(.31,.2),new THREE.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:.8}));sc.position.set(0,.11,.007);lid.add(sc);
   return g;}
-const IN={32:[.715,.402],43:[.952,.535],50:[1.107,.623],85:[1.882,1.059]};
+const IN={32:[.715,.402],43:[.952,.535],50:[1.107,.623],65:[1.439,.809],85:[1.882,1.059]};
 
 // hall floor + carpet
 const fl=mesh(new THREE.PlaneGeometry(60,60),mat.floor,false);fl.rotation.x=-Math.PI/2;fl.position.y=-0.002;
@@ -155,43 +214,43 @@ box(3300,0,4100,100,2.05,H-2.05,mat.wall);
 box(3320,30,4080,70,0,2.03,mat.door);
 {const [X,Z]=W(3950,-10);const k=mesh(new THREE.CylinderGeometry(.015,.015,.14,12),mat.metal);k.rotation.z=Math.PI/2;k.position.set(X,1.0,Z);}
 label('STOCK 3000×1500',4500,750,2.95);
-label('扉 W800（通路側）',3700,0,2.2);
-tv(3000,750,-1,0,...IN[32],1.5,screenTex('紹介動画','32"',210));
-label('紹介動画 32インチTV',3000,750,2.1);
+label(['扉 W800（通路側）','Door W800 (aisle side)'],3700,0,2.2);
+tv(3000,750,-1,0,...IN[32],1.5,screenTex('Intro Video','32"',210));
+label(['紹介動画 32インチTV','Intro video 32" TV'],3000,750,2.1);
 // rally graphic on stock right face
 {const c=document.createElement('canvas');c.width=512;c.height=768;const g=c.getContext('2d');const gr=g.createLinearGradient(0,0,0,768);gr.addColorStop(0,'#0f1c3a');gr.addColorStop(1,'#09090c');g.fillStyle=gr;g.fillRect(0,0,512,768);
   g.strokeStyle='#e63946';g.lineWidth=10;for(let i=0;i<4;i++){g.beginPath();g.moveTo(-40,520+i*40);g.lineTo(560,380+i*40);g.stroke();}
-  g.fillStyle='#fff';g.textAlign='center';g.font='900 66px "Noto Sans JP",sans-serif';g.fillText('RALLY',256,250);g.font='700 30px "Noto Sans JP",sans-serif';g.fillText('ラリー グラフィック',256,310);
+  g.fillStyle='#fff';g.textAlign='center';g.font='900 66px "Noto Sans JP",sans-serif';g.fillText('RALLY',256,250);g.font='700 30px "Noto Sans JP",sans-serif';g.fillText('Rally graphic',256,310);
   const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const p=mesh(new THREE.PlaneGeometry(1.4,2.5),new THREE.MeshStandardMaterial({map:t,roughness:.8}),false);
   const [X,Z]=W(6002,750);p.position.set(X,1.3,Z);p.rotation.y=Math.PI/2;}
-label('d ラリー',6000,750,2.95);
+label(['d ラリー','d Rally graphic'],6000,750,2.95);
 
-// F8VPS diagonal wall + light grey stand + 50" x2
+// F8VPS diagonal wall + light grey stand + 50" (stand side) + 65" (hologram side)
 const fA=[180,170],fB=[1750,1600];
 const fw=band(fA,fB,370,0,0,H,mat.wall);
 // stand runs the full wall length; the A end stops where its outer corner meets the booth edge (y=0)
 const fS=[452,418];
 band(fS,fB,380,375,0,1.0,mat.stand);{const [nx,ny]=fw.n;const c=[1048,962];
- const lt=screenTex('F8VPS','デモ',205);
+ const lt=screenTex('F8VPS','Demo',205);
  [.25,.75].forEach(s=>laptop(fS[0]+(fB[0]-fS[0])*s+nx*375,fS[1]+(fB[1]-fS[1])*s+ny*375,nx,ny,1.0,lt));
  tv(c[0]+nx*185,c[1]+ny*185,nx,ny,...IN[50],1.62,screenTex('F8VPS','50"',205));
- tv(c[0]-nx*185,c[1]-ny*185,-nx,-ny,...IN[50],1.5,screenTex('F8VPS','50"',230));
+ tv(c[0]-nx*185,c[1]-ny*185,-nx,-ny,...IN[65],1.5,screenTex('F8VPS','65"',230)); // behind the hologram
  label('F8VPS',c[0]+nx*600,c[1]+ny*600,1.15,'k');
- label('50インチTV',c[0]-nx*500,c[1]-ny*500,1.95);}
+ label(['65インチTV','65" TV'],c[0]-nx*500,c[1]-ny*500,1.95);}
 
 // ForumSync bent wall + light grey stand + 50" + 43" + 85"
 prism([[1950,2750],[3180,3980],[3180,6000],[2670,6000],[2670,4191],[1589,3111]],0,H,mat.wall);
 band([1950,2750],[3180,3980],330,175,0,1.0,mat.stand);{const n=[Math.SQRT1_2,-Math.SQRT1_2];
- const lt=screenTex('ForumSync','デモ',195);
+ const lt=screenTex('ForumSync','Demo',195);
  [.25,.75].forEach(s=>laptop(1950+1230*s+n[0]*175,2750+1230*s+n[1]*175,n[0],n[1],1.0,lt));
- tv(2600,3400,n[0],n[1],...IN[50],1.62,screenTex('ForumSync','デジタルツイン 50"',195));
+ tv(2600,3400,n[0],n[1],...IN[50],1.62,screenTex('ForumSync','Digital Twin 50"',195));
  tv(2130,3651,-n[0],-n[1],...IN[43],1.5,screenTex('VR360','43"',120));
- label('ForumSync デジタルツイン',2600+n[0]*700,3400+n[1]*700,1.15,'k');
- label('43インチTV／VR360用モニター',2130-n[0]*500,3651-n[1]*500,1.95);}
+ label(['ForumSync デジタルツイン','ForumSync Digital Twin'],2600+n[0]*700,3400+n[1]*700,1.15,'k');
+ label(['43インチTV／VR360用モニター','43" TV / VR360 monitor'],2130-n[0]*500,3651-n[1]*500,1.95);}
 tv(3180,5000,1,0,...IN[85],1.45,screenTex('Presentation','85"',215));
-label('85インチモニター',3400,5000,2.1);
+label(['85インチモニター','85" monitor'],3400,5000,2.1);
 
-// 3D hologram display (Metavania HoloSync): clear acrylic case 750×750×150 on a pole stand Ø500, faces away from the linked 50" TV
+// 3D hologram display (Metavania HoloSync): clear acrylic case 750×750×150 on a pole stand Ø500, faces away from the linked 65" TV
 let holoCore;
 {const [X,Z]=W(420,1780);const g=new THREE.Group();g.position.set(X,0,Z);g.rotation.y=Math.atan2(-fw.n[0],-fw.n[1]);scene.add(g);
  const dark=M(0x1b1c1f,{roughness:.4,metalness:.3});
@@ -204,12 +263,12 @@ let holoCore;
  const beam=M(0x000000,{emissive:0xb04dff,emissiveIntensity:3});
  [[.6,.75],[-.6,-.75],[.0,1.3]].forEach(([rz,x],i)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.012,.62,.012),beam);b.position.set(i<2?x*.15:0,cy,0);b.rotation.z=rz;g.add(b);});
  holoCore=new THREE.Mesh(new THREE.IcosahedronGeometry(.12,1),new THREE.MeshBasicMaterial({color:0xd9a6ff,wireframe:true}));holoCore.position.set(0,cy,0);g.add(holoCore);
- label('3Dホログラフィックディスプレイ',420,1780,2.1);}
+ label(['3Dホログラフィックディスプレイ','3D holographic display'],420,1780,2.1);}
 
 // pole partition
 [[450,3690],[1450,3690]].forEach(([x,y])=>{const [X,Z]=W(x,y);const b=mesh(new THREE.CylinderGeometry(.17,.17,.03,32),mat.grey);b.position.set(X,.015,Z);const p=mesh(new THREE.CylinderGeometry(.03,.03,.95,16),mat.metal);p.position.set(X,.475,Z);});
 box(450,3680,1450,3700,.84,.05,mat.red);
-label('ポールパーテーション',950,3690,1.2);
+label(['ポールパーテーション','Pole partition'],950,3690,1.2);
 
 // VR360 simulator area
 box(100,4160,2600,5560,0,.12,mat.grey);box(180,4240,2520,5480,.12,.01,mat.green);
@@ -228,11 +287,10 @@ box(100,4160,2600,5560,0,.12,mat.grey);box(180,4240,2520,5480,.12,.01,mat.green)
  add(new THREE.Mesh(new THREE.BoxGeometry(.5,.12,.5),dk),0,.78,.25);
  const sb=add(new THREE.Mesh(new THREE.BoxGeometry(.5,.85,.12),dk),0,1.25,.5);sb.rotation.x=-.18;
  const foot=add(new THREE.Mesh(new THREE.BoxGeometry(.55,.04,.35),dk),0,.5,-.45);foot.rotation.x=.35;}
-label('VR360 シミュレータ',1350,4860,2.25,'k');
+label(['VR360 シミュレータ','VR360 Simulator'],1350,4860,2.25,'k');
 
-tv(5000,1500,0,1,...IN[43],1.5,screenTex('公道最速','43"',0));
-label('43インチTV（壁掛け）',5000,1520,2.05);
-// rally simulator seat (driver faces front A)
+tv(5000,1500,0,1,...IN[43],1.5,screenTex('Rally VR','43"',0));
+label(['43インチTV（壁掛け）','43" TV (wall-mounted)'],5000,1520,2.05);
 // VR motion seat 800×800×1600: black bucket seat on a black actuator base, back toward the wall TV
 {const [X,Z]=W(5000,2250);const bk=M(0x151618,{roughness:.55}),lth=M(0x222326,{roughness:.45});
  const base=mesh(new THREE.BoxGeometry(.8,.5,.8),bk);base.position.set(X,.25,Z);
@@ -244,12 +302,12 @@ label('43インチTV（壁掛け）',5000,1520,2.05);
  const head=mesh(new THREE.BoxGeometry(.3,.2,.12),lth);head.position.set(X,1.5,Z-.33);head.rotation.x=-.12;
  const foot=mesh(new THREE.BoxGeometry(.45,.03,.3),mat.grey);foot.position.set(X,.15,Z+.55);foot.rotation.x=.3;
  const fs=mesh(new THREE.BoxGeometry(.06,.3,.06),bk);fs.position.set(X,.15,Z+.45);
- label('公道最速体感シミュレータ',5000,2250,1.85,'k');}
+ label(['公道最速体感シミュレータ','VR motion seat (rally)'],5000,2250,1.85,'k');}
 
 // high tables Ø600
 function highTable(x,y){const [X,Z]=W(x,y);const t=mesh(new THREE.CylinderGeometry(.3,.3,.03,48),mat.white);t.position.set(X,1.05,Z);
  const p=mesh(new THREE.CylinderGeometry(.03,.03,1.03,16),mat.metal);p.position.set(X,.52,Z);const b=mesh(new THREE.CylinderGeometry(.22,.24,.02,32),mat.metal);b.position.set(X,.01,Z);
- label('ハイテーブル Ø600',x,y,1.3);}
+ label(['ハイテーブル Ø600','High table Ø600'],x,y,1.3);}
 highTable(4050,2250);highTable(3580,5550);
 
 // 体験コーナー: バーテーブル 1800×600 H1000 ×2列、1列3セット（ハンドルは通路B側、奥にノートPC、ペダルは天板下）
@@ -276,8 +334,8 @@ function barRow(x1){const x2=x1+600,H1=1.0;
  [4225,5425].forEach(zc=>{const [X,Z]=W(x1+300,zc);const p=mesh(new THREE.CylinderGeometry(.03,.03,H1-.03,16),mat.metal);p.position.set(X,(H1-.03)/2,Z);
    const b=mesh(new THREE.CylinderGeometry(.25,.26,.02,40),mat.metal);b.position.set(X,.01,Z);});
  [4225,4825,5425].forEach(zc=>wheelSet(x2,zc,H1));
- label('体験コーナー 3セット',x1+300,4825,1.6);}
-barRow(3900);barRow(5350);
+ label(['体験コーナー 3セット','Driving corner ×3'],x1+300,4825,1.6);}
+barRow(4100);barRow(5350); // TV-side row set 200 back from the 85" monitor
 
 
 // ===== 看板案（天端 4990 ／ 行燈 H900 = 4090–4990）=====
@@ -407,14 +465,78 @@ function showSign(k){Object.keys(signs).forEach(s=>{signs[s].visible=s===k;signL
 // scale figure (1700)
 {const [X,Z]=W(-900,6400);const mm=M(0xd8dade);const b=mesh(new THREE.CylinderGeometry(.17,.14,1.0,16),mm);b.position.set(X,1.05,Z);
  const l=mesh(new THREE.CylinderGeometry(.12,.1,.55,12),mm);l.position.set(X,.28,Z);const hd=mesh(new THREE.SphereGeometry(.12,20,16),mm);hd.position.set(X,1.63,Z);
- label('人物 1700',-900,6400,1.95);}
+ label(['人物 1700','Person 1700'],-900,6400,1.95);}
 
 // views
 const views={persp:[[-8.2,5.8,10.6],[0,1.9,0]],a:[[0,2.6,13],[0,2.3,0]],b:[[12.5,2.6,0],[0,2.0,0]],c:[[-12.5,2.6,0],[0,2.0,0]],back:[[0,2.8,-12.5],[0,2.0,0]],top:[[0,17,.01],[0,0,0]]};
 let anim=null;
-function go(k){const [p,t]=views[k];const fp=camera.position.clone(),ft=controls.target.clone(),tp=new THREE.Vector3(...p),tt=new THREE.Vector3(...t);
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let s=reduce?1:0;anim=()=>{s=Math.min(1,s+0.045);const e=1-Math.pow(1-s,3);camera.position.lerpVectors(fp,tp,e);controls.target.lerpVectors(ft,tt,e);if(s>=1)anim=null;};
-  document.querySelectorAll('[id^="v-"]').forEach(b=>b.setAttribute('aria-pressed',b.id==='v-'+k));}
+function flyTo(p,t){const fp=camera.position.clone(),ft=controls.target.clone(),tp=new THREE.Vector3(...p),tt=new THREE.Vector3(...t);
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let s=reduce?1:0;anim=()=>{s=Math.min(1,s+0.045);const e=1-Math.pow(1-s,3);camera.position.lerpVectors(fp,tp,e);controls.target.lerpVectors(ft,tt,e);if(s>=1)anim=null;};}
+function go(k){flyTo(...views[k]);document.querySelectorAll('[id^="v-"]').forEach(b=>b.setAttribute('aria-pressed',b.id==='v-'+k));}
+
+// ===== equipment & power (from the equipment spec list, 2026-10-30) =====
+// no: sheet number · w: W per unit · pos: plan point · pin: pin height · th: camera target height · view: plan direction the camera looks from · d: distance
+const EQ=[
+ {no:1,name:['VR360 シミュレータ','VR360 Simulator'],qty:1,size:'2047×1250×1960',kg:'350',w:2800,mount:['床置き','Floor'],space:['約2.5×1.3 m','approx. 2.5×1.3 m'],
+  note:['背面に43インチモニター壁掛け／ポールパーテーションで動線規制','43" monitor wall-mounted behind; pole partition guides visitor flow'],pos:[1350,4860],pin:2.7,th:1.1,view:[-1,0],d:4.5},
+ {no:2,name:['VR360用モニター 43インチ','43" monitor for VR360'],qty:1,size:['約960×60×560','approx. 960×60×560'],kg:'9',w:80,mount:['壁掛け','Wall-mounted'],pos:[2130,3651],pin:2.3,th:1.4,view:[-1,.2],d:2.5},
+ {no:3,name:['VRモーションシート（公道最速体感）','VR motion seat (rally experience)'],qty:1,size:'800×800×1600',kg:['約110（最大荷重150）','approx. 110 (max. load 150)'],w:2000,wNote:'220 VAC 9 A',mount:['床置き','Floor'],
+  space:['約1.35×1.4 m','approx. 1.35×1.4 m'],note:['背面の壁に43インチTV（壁掛け）','43" TV wall-mounted on the wall behind'],pos:[5000,2250],pin:2.25,th:1.0,view:[0,1],d:3.5},
+ {no:4,name:['3Dホログラフィックディスプレイ（Metavania HoloSync）','3D holographic display (Metavania HoloSync)'],qty:1,size:['75×75 厚み150','75×75, depth 150'],kg:['約1.5','approx. 1.5'],w:200,mount:['床置き','Floor'],
+  note:['台座 Ø約500 mm ポールスタンド／背面の65インチTVと連動','Pole stand, base approx. Ø500 mm; synced with the 65" TV behind it'],pos:[420,1780],pin:2.45,th:1.4,view:[-.673,.739],d:3},
+ {no:5,name:['50インチTV（F8VPS 展示台側）','50" TV (F8VPS, stand side)'],qty:1,size:['約1120×65×650','approx. 1120×65×650'],kg:'12',w:120,mount:['壁掛け','Wall-mounted'],pos:[1172,825],pin:2.15,th:1.4,view:[.673,-.739],d:3},
+ {no:6,name:['65インチTV（F8VPS 壁面側・ホログラム背面）','65" TV (F8VPS wall side, behind hologram)'],qty:1,size:['約1450×70×840','approx. 1450×70×840'],kg:['約22','approx. 22'],w:200,mount:['壁掛け','Wall-mounted'],
+  note:['50→65インチに変更。外形・重量・電力は一般的な65インチの目安（機種確定後に更新）','Changed from 50" to 65". Size, weight and power are typical 65" estimates (update once the model is fixed)'],pos:[924,1099],pin:2.0,th:1.4,view:[-.673,.739],d:3},
+ {no:7,name:['50インチTV（ForumSync）','50" TV (ForumSync)'],qty:1,size:['約1120×65×650','approx. 1120×65×650'],kg:'12',w:120,mount:['壁掛け','Wall-mounted'],pos:[2600,3400],pin:2.15,th:1.4,view:[.707,-.707],d:2.4},
+ {no:8,name:['32インチTV（紹介動画）','32" TV (intro video)'],qty:1,size:['約720×60×420','approx. 720×60×420'],kg:'5',w:50,mount:['壁掛け','Wall-mounted'],pos:[3000,750],pin:2.45,th:1.4,view:[-1,1],d:2},
+ {no:9,name:['85インチモニター（プレゼン）','85" monitor (presentation)'],qty:1,size:['約1900×70×1100','approx. 1900×70×1100'],kg:'55',w:400,mount:['壁掛け','Wall-mounted'],pos:[3180,5000],pin:2.4,th:1.3,view:[1,0],d:4},
+ {no:10,name:['体験コーナー（ハンドルコントローラ＋ペダル）','Driving corner (wheel controller + pedals)'],qty:6,size:'—',kg:'—',w:0,wText:['PCからUSB給電','USB-powered from PC'],mount:['天板・足元','Tabletop / floor'],
+  note:['バーテーブル 1800×600 H1000 ×2列、1列3セット','Bar tables 1800×600 H1000, 2 rows of 3 sets'],pos:[5025,4825],pin:1.9,th:1.0,view:[1,.35],d:5},
+ {no:11,name:['43インチTV（モーションシート用）','43" TV (for motion seat)'],qty:1,size:['約960×60×560','approx. 960×60×560'],kg:'9',w:80,mount:['壁掛け','Wall-mounted'],pos:[5000,1500],pin:2.4,th:1.4,view:[0,1],d:3},
+ {no:'+',name:['ノートPC','Laptop PCs'],qty:12,size:'—',kg:'—',w:120,mount:['各機材の近く','Near each exhibit']}
+];
+const totalW=EQ.reduce((s,e)=>s+e.w*e.qty,0), maxW=Math.max(...EQ.map(e=>e.w*e.qty));
+const fmt=n=>n.toLocaleString('en-US');
+const pins={};let sel=null;
+EQ.forEach(e=>{if(!e.pos)return;const d=document.createElement('div');d.className='pin';d.innerHTML=`<span>${e.no}</span>`;
+  d.onclick=ev=>{ev.stopPropagation();select(e.no,true);};const o=new CSS2DObject(d);const [X,Z]=W(...e.pos);o.position.set(X,e.pin,Z);scene.add(o);pins[e.no]=d;});
+const panel=document.getElementById('panel'),list=document.getElementById('eq-list');
+function rowHTML(e){const on=sel===e.no,tot=e.w*e.qty;
+  const L=(ja,en)=>lang==='ja'?ja:en;
+  const det=on?`<span class="detail">
+    <span>${L('外形','Size')}</span><b>${tr(e.size)} mm</b>
+    <span>${L('重量','Weight')}</span><b>${tr(e.kg)}${e.kg==='—'?'':' kg'}</b>
+    <span>${L('電力','Power')}</span><b>${e.w?`${fmt(e.w)} W${e.qty>1?L('／台',' / unit'):''}${e.wNote?` (${e.wNote})`:''}`:tr(e.wText)}</b>
+    <span>${L('設置','Mounting')}</span><b>${tr(e.mount)}</b>
+    ${e.space?`<span>${L('スペース','Space')}</span><b>${tr(e.space)}</b>`:''}
+    ${e.note?`<span>${L('備考','Notes')}</span><b>${tr(e.note)}</b>`:''}</span>`:'';
+  return `<button class="row${on?' on':''}" data-no="${e.no}" aria-expanded="${on}"><span class="no">${e.no}</span><span class="nm">${tr(e.name)}${e.qty>1?` <em>×${e.qty}</em>`:''}</span>
+    <span class="pw">${tot?fmt(tot)+' W':tr(e.wText)}</span><span class="bar2"><i style="width:${(tot/maxW*100).toFixed(1)}%"></i></span>${det}</button>`;}
+function renderPanel(){list.innerHTML=EQ.map(rowHTML).join('');
+  document.getElementById('sum-w').textContent=fmt(totalW)+' W';document.getElementById('sum-a').textContent=(lang==='ja'?'約':'≈')+(totalW/230).toFixed(1)+' A';}
+list.addEventListener('click',ev=>{const b=ev.target.closest('.row');if(!b)return;const no=isNaN(b.dataset.no)?b.dataset.no:+b.dataset.no;select(sel===no?null:no,true);});
+function select(no,fly){sel=no;Object.entries(pins).forEach(([k,d])=>d.classList.toggle('on',String(no)===k));renderPanel();
+  const e=EQ.find(x=>x.no===no);
+  if(!e){if(fly)go('persp');return;}
+  if(panel.hidden)setPanel(true);
+  list.querySelector('.row.on')?.scrollIntoView({block:'nearest',behavior:'smooth'});
+  if(fly&&e.pos){const [X,Z]=W(...e.pos);const v=new THREE.Vector2(...e.view).normalize();
+    flyTo([X+v.x*e.d,e.th+.6+e.d*.2,Z+v.y*e.d],[X,e.th,Z]);document.querySelectorAll('[id^="v-"]').forEach(b=>b.setAttribute('aria-pressed',false));}
+  else if(fly)go('persp');}
+const eqBtn=document.getElementById('t-eq');
+function setPanel(open){panel.hidden=!open;eqBtn.setAttribute('aria-pressed',open);document.body.classList.toggle('panel-open',open);}
+eqBtn.onclick=()=>setPanel(panel.hidden);document.getElementById('eq-x').onclick=()=>setPanel(false);
+function placePanel(){const b=document.querySelector('.bar').getBoundingClientRect();panel.style.setProperty('--ptop',(b.bottom+8)+'px');}
+setPanel(innerWidth>700);
+
+function applyLang(l){lang=l;try{localStorage.setItem('booth-lang',l);}catch(e){}
+  document.documentElement.lang=l;document.title=l==='ja'?'SIGGRAPH Asia 2026 ブース3D':'SIGGRAPH Asia 2026 Booth 3D';
+  document.querySelectorAll('[data-en]').forEach(el=>el.textContent=el.dataset[l]);
+  i18nLabels.forEach(([d,t])=>d.textContent=tr(t));
+  document.getElementById('l-en').setAttribute('aria-pressed',l==='en');document.getElementById('l-ja').setAttribute('aria-pressed',l==='ja');
+  renderPanel();placePanel();}
+document.getElementById('l-en').onclick=()=>applyLang('en');document.getElementById('l-ja').onclick=()=>applyLang('ja');
+applyLang(lang);
 camera.position.set(...views.persp[0]);controls.target.set(...views.persp[1]);
 Object.keys(views).forEach(k=>document.getElementById('v-'+k).onclick=()=>go(k));
 const tog=(id,fn)=>{const b=document.getElementById(id);b.onclick=()=>{const v=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',v);fn(v);};};
@@ -422,7 +544,7 @@ tog('t-label',v=>stage.classList.toggle('hide-labels',!v));
 showSign('none');
 tog('t-rot',v=>{controls.autoRotate=v;controls.autoRotateSpeed=0.8;});
 
-function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h);composer.setSize(w,h);labelR.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
+function resize(){const w=innerWidth,h=innerHeight;placePanel();renderer.setSize(w,h);composer.setSize(w,h);labelR.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
 addEventListener('resize',resize);resize();
 const clock=new THREE.Clock();
 renderer.setAnimationLoop(()=>{if(anim)anim();controls.update();
