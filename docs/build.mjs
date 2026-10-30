@@ -196,7 +196,7 @@ const DOCS = {
       ${EQ.filter(e => e.no !== 'iP').map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td><td class="n">${e.w ? fmt(e.w) + (e.wNote ? `<small>${esc(e.wNote)}</small>` : '') : tx(e.wText)}</td><td class="n">${e.w ? fmt(e.w * e.qty) : '—'}</td><td class="n">${outlets(e) || '—'}</td><td>${e === PC ? `At LAN drops ${Object.entries(PC_AT).map(([k, n]) => `${k} ×${n}`).join(', ')}` : tx(e.mount)}</td></tr>`).join('')}
     </tbody><tfoot><tr><td></td><td>Total</td><td></td><td></td><td class="n">${fmt(totalW)}</td><td class="n">${totalOut}</td><td>≈ ${(totalW / 230).toFixed(1)} A at 230 V</td></tr></tfoot></table>
     <ul class="notes"><li><b>Outlet positions are indicative and may be adjusted flexibly to suit site conditions.</b></li>
-      <li>All outlets at floor level, one per device. Extension cords and power strips are not permitted.</li>
+      <li>All outlets at floor level, one per device.</li>
       <li>Dedicated circuits recommended for the VR360 Simulator (2,800 W ≈ 12.2 A) and the VR motion seat (220 VAC 9 A).</li>
       <li>Laptop outlets are at the LAN drops of the PCs they serve (see plan).</li>
       <li>Power figures are catalog estimates; final values will follow once equipment is confirmed.</li></ul>${SOURCE}`},
