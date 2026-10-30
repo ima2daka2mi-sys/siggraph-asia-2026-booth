@@ -265,9 +265,9 @@ band([1950,2750],[3180,3980],330,175,0,1.0,mat.stand);{const n=[Math.SQRT1_2,-Ma
  const lt=screenTex('ForumSync','Demo',195);
  [.25,.75].forEach(s=>laptop(1950+1230*s+n[0]*175,2750+1230*s+n[1]*175,n[0],n[1],1.0,lt));
  ipad(2565+n[0]*175,3365+n[1]*175,n[0],n[1],1.0,screenTex('iPad','ForumSync',195));
- tv(2600,3400,n[0],n[1],...IN[50],1.62,screenTex('ForumSync','Digital Twin 50"',195));
+ tv(2600,3400,n[0],n[1],...IN[50],1.62,screenTex('ForumSync','50"',195));
  tv(2130,3651,-n[0],-n[1],...IN[43],1.8,screenTex('VR360','43"',120));
- label(['ForumSync デジタルツイン','ForumSync Digital Twin'],2600+n[0]*700,3400+n[1]*700,1.15,'k');
+ label('ForumSync',2600+n[0]*700,3400+n[1]*700,1.15,'k');
  label(['43インチTV／VR360用モニター','43" TV / VR360 monitor'],2130-n[0]*500,3651-n[1]*500,2.25);}
 tv(3180,5000,1,0,...IN[85],1.45,screenTex('Presentation','85"',215));
 label(['85インチモニター','85" monitor'],3400,5000,2.1);
@@ -527,8 +527,8 @@ EQ.forEach(e=>{if(!e.pos)return;const d=document.createElement('div');d.classNam
 // stand drops sit near the wall edge, behind the iPads
 const fMid=[(fS[0]+fB[0])/2+fw.n[0]*250,(fS[1]+fB[1])/2+fw.n[1]*250], sMid=[2565+Math.SQRT1_2*50,3365-Math.SQRT1_2*50];
 const LAN=[
- {no:'L1',name:['F8VPS 展示台（ノートPC×2＋iPad）','F8VPS stand (2 laptops + iPad)'],ports:3,pos:fMid,tag:1.35,th:1.0,view:fw.n,d:2.6},
- {no:'L2',name:['ForumSync 展示台（ノートPC×2＋iPad）','ForumSync stand (2 laptops + iPad)'],ports:3,pos:sMid,tag:1.35,th:1.0,view:[Math.SQRT1_2,-Math.SQRT1_2],d:2.4},
+ {no:'L1',name:['F8VPS 展示台（ノートPC×2＋iPad）','F8VPS stand (2 laptops + iPad)'],ports:3,ipad:1,pos:fMid,tag:1.35,th:1.0,view:fw.n,d:2.6},
+ {no:'L2',name:['ForumSync 展示台（ノートPC×2＋iPad）','ForumSync stand (2 laptops + iPad)'],ports:3,ipad:1,pos:sMid,tag:1.35,th:1.0,view:[Math.SQRT1_2,-Math.SQRT1_2],d:2.4},
  {no:'L3',name:['体験コーナー 85インチ側の列（ノートPC×3）','Driving corner, 85" side row (3 laptops)'],ports:3,pos:[4400,4825],tag:1.4,th:1.0,view:[1,.35],d:3.2},
  {no:'L4',name:['体験コーナー 通路B側の列（ノートPC×3）','Driving corner, aisle B row (3 laptops)'],ports:3,pos:[5650,4825],tag:1.4,th:1.0,view:[1,.2],d:2.6},
  {no:'L5',name:['VR360 シミュレータ用PC','VR360 Simulator PC'],ports:1,pos:[2450,4300],tag:.75,th:.4,view:[1,-.4],d:2.6},
@@ -543,7 +543,8 @@ const lanMat=M(0x000000,{emissive:0xff9f1a,emissiveIntensity:1.6});
 LAN.forEach(l=>{const [X,Z]=W(...l.pos);
   const jack=new THREE.Mesh(new THREE.BoxGeometry(.12,.03,.12),lanMat);jack.position.set(X,.03,Z);lanGroup.add(jack);           // floor outlet
   const drop=new THREE.Mesh(new THREE.CylinderGeometry(.006,.006,l.tag-.1,6),lanMat);drop.position.set(X,(l.tag-.1)/2+.03,Z);lanGroup.add(drop); // cable up to the tag
-  const d=document.createElement('div');d.className='lan';d.innerHTML=`<span>LAN${l.ports>1?' ×'+l.ports:''}</span>`;
+  const d=document.createElement('div');d.className='lan';const txt=`LAN${l.ports>1?' ×'+l.ports:''}`;
+  const t=l.ipad?[`${txt}（iPad用 ${l.ipad}）`,`${txt} (${l.ipad} for iPad)`]:txt;d.innerHTML='<span></span>';d.firstChild.textContent=tr(t);if(l.ipad)i18nLabels.push([d.firstChild,t]);
   d.onclick=ev=>{ev.stopPropagation();select(l.no,true);};const o=new CSS2DObject(d);o.position.set(X,l.tag,Z);lanGroup.add(o);lanTags[l.no]=d;});
 
 // ===== booth height 2700 marked at four corners =====
