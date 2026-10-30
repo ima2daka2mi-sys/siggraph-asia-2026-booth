@@ -550,8 +550,8 @@ const EQ=[
  {no:'+',name:['ノートPC','Laptop PCs'],qty:13,size:'—',kg:'—',w:120,mount:['各機材の近く','Near each exhibit']},
  {no:'iP',name:['iPad（F8VPS・ForumSync 展示台）','iPad (F8VPS & ForumSync stands)'],qty:2,size:'—',kg:'—',w:0,wText:['—','—'],mount:['展示台の上（スタンド立て）','On the stands, on a holder'],
   note:['各展示台の中央、ノートPC 2台の間。有線LAN 1口ずつ','Centre of each stand between the two laptops; one wired LAN port each']},
- {no:'S',name:['STOCK内コンセント（ネットワークスイッチ等）','STOCK outlet (network switch etc.)'],qty:1,size:'—',kg:'—',w:0,outlets:1,wText:['—','—'],mount:['STOCK内・床','Inside STOCK, floor'],
-  note:['汎用（ネットワークスイッチ等）。電力は機器確定後に記入','General use (e.g. network switch); power to be filled in once the devices are fixed'],pos:[4900,400],pin:.9,th:.2,view:[0,1],d:2.2,up:5.5}
+ {no:'S',name:['STOCK内コンセント（ネットワークスイッチ等）','STOCK outlet (network switch etc.)'],qty:1,size:'—',kg:'—',w:500,mount:['STOCK内・床','Inside STOCK, floor'],
+  note:['汎用（ネットワークスイッチ等）500W','General use (e.g. network switch), 500 W'],pos:[4900,400],pin:.9,th:.2,view:[0,1],d:2.2,up:5.5}
 ];
 const totalW=EQ.reduce((s,e)=>s+e.w*e.qty,0), maxW=Math.max(...EQ.map(e=>e.w*e.qty));
 const fmt=n=>n.toLocaleString('en-US');
