@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
@@ -99,7 +99,7 @@ const fill=new THREE.DirectionalLight(0xcfe0ff,0.5); fill.position.set(6,6,-5); 
 const W=(x,y)=>[(x-3000)/1000,(y-3000)/1000];
 const M=(c,o={})=>new THREE.MeshStandardMaterial({color:c,roughness:.7,metalness:0,...o});
 const mat={
-  wall:M(0x8a8d93,{roughness:.85}), navy:M(0x1f4e79,{roughness:.6}), tvBody:M(0x0d0e10,{roughness:.4}),
+  wall:M(0x8a8d93,{roughness:.85}), stand:M(0xd4d6da,{roughness:.6}), tvBody:M(0x0d0e10,{roughness:.4}),
   carpet:M(0x3d3f44,{roughness:1}), floor:M(0x8d8f93,{roughness:.95}), white:M(0xf1f1ef), grey:M(0x5e6168),
   green:M(0x6a9a3a), red:M(0xc0392b), metal:M(0xb9bec6,{metalness:.6,roughness:.35}), door:M(0x2b2d31,{roughness:.6}),
   blue:M(0x4fa3d9), logo:M(0xf2a48f,{roughness:1})
@@ -148,19 +148,19 @@ label('紹介動画 32インチTV',3000,750,2.1);
   const [X,Z]=W(6002,750);p.position.set(X,1.3,Z);p.rotation.y=Math.PI/2;}
 label('d ラリー',6000,750,2.95);
 
-// F8VPS diagonal wall + navy stand + 50" x2
+// F8VPS diagonal wall + light grey stand + 50" x2
 const fA=[180,170],fB=[1750,1600];
 const fw=band(fA,fB,370,0,0,H,mat.wall);
-band([430,400],[1667,1525],380,375,0,1.0,mat.navy);
+band([430,400],[1667,1525],380,375,0,1.0,mat.stand);
 {const [nx,ny]=fw.n;const c=[1048,962];
  tv(c[0]+nx*185,c[1]+ny*185,nx,ny,...IN[50],1.62,screenTex('F8VPS','50"',205));
  tv(c[0]-nx*185,c[1]-ny*185,-nx,-ny,...IN[50],1.5,screenTex('F8VPS','50"',230));
  label('F8VPS',c[0]+nx*600,c[1]+ny*600,1.15,'k');
  label('50インチTV',c[0]-nx*500,c[1]-ny*500,1.95);}
 
-// ForumSync bent wall + navy + 50" + 43" + 85"
+// ForumSync bent wall + light grey stand + 50" + 43" + 85"
 prism([[1950,2750],[3180,3980],[3180,6000],[2670,6000],[2670,4191],[1589,3111]],0,H,mat.wall);
-band([2150,2950],[3050,3850],330,175,0,1.0,mat.navy);
+band([2150,2950],[3050,3850],330,175,0,1.0,mat.stand);
 {const n=[Math.SQRT1_2,-Math.SQRT1_2];
  tv(2600,3400,n[0],n[1],...IN[50],1.62,screenTex('ForumSync','デジタルツイン 50"',195));
  tv(2130,3651,-n[0],-n[1],...IN[43],1.5,screenTex('VR360','43"',120));
