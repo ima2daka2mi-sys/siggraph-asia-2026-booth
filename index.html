@@ -299,10 +299,7 @@ label(['43インチTV（壁掛け）','43" TV (wall-mounted)'],5000,1520,2.05);
  const back=mesh(new THREE.BoxGeometry(.52,.95,.14),lth);back.position.set(X,1.1,Z-.27);back.rotation.x=-.12;
  [-.29,.29].forEach(dx=>{const w=mesh(new THREE.BoxGeometry(.07,.75,.2),lth);w.position.set(X+dx,1.0,Z-.22);w.rotation.x=-.12;
    const s=mesh(new THREE.BoxGeometry(.07,.16,.42),lth);s.position.set(X+dx,.7,Z+.02);});
- const head=mesh(new THREE.BoxGeometry(.3,.2,.12),lth);head.position.set(X,1.5,Z-.33);head.rotation.x=-.12;
- const foot=mesh(new THREE.BoxGeometry(.45,.03,.3),mat.grey);foot.position.set(X,.15,Z+.55);foot.rotation.x=.3;
- const fs=mesh(new THREE.BoxGeometry(.06,.3,.06),bk);fs.position.set(X,.15,Z+.45);
- label(['公道最速体感シミュレータ','VR motion seat (rally)'],5000,2250,1.85,'k');}
+ const head=mesh(new THREE.BoxGeometry(.3,.2,.12),lth);head.position.set(X,1.5,Z-.33);head.rotation.x=-.12; label(['公道最速体感シミュレータ','VR motion seat (rally)'],5000,2250,1.85,'k');}
 
 // high tables Ø600
 function highTable(x,y){const [X,Z]=W(x,y);const t=mesh(new THREE.CylinderGeometry(.3,.3,.03,48),mat.white);t.position.set(X,1.05,Z);
