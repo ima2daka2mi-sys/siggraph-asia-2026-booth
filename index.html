@@ -141,6 +141,7 @@ select option{background:#1b1d22;color:var(--fg)}
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
 import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
 import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
@@ -305,34 +306,21 @@ polePair(3690);polePair(5800);
 
 // VR360 simulator area
 box(100,4160,2600,5560,0,.12,mat.grey);box(180,4240,2520,5480,.12,.01,mat.green);
-{const [X,Z]=W(1350,4860);const vr=new THREE.Group();vr.position.set(X,0,Z);vr.rotation.y=Math.PI/2;scene.add(vr); // 90° 左回り（上から見て）
- // spaceF8 pod: 2047(D)×1250(W)×1960(H); egg shell open to the front (-z), base with front step
- const shellW=new THREE.MeshPhysicalMaterial({color:0xeef0f2,roughness:.25,clearcoat:1,clearcoatRoughness:.1});
- const shellIn=M(0x45484f,{roughness:.6,side:THREE.BackSide});const dk=M(0x222326,{roughness:.5});
- const add=(m,x,y,z)=>{m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;vr.add(m);return m;};
- add(new THREE.Mesh(new THREE.BoxGeometry(1.25,.22,2.05),dk),0,.11,0);
- add(new THREE.Mesh(new THREE.BoxGeometry(.6,.12,.35),M(0x8a8d93)),0,.06,-1.2);
- add(new THREE.Mesh(new THREE.CylinderGeometry(.18,.25,.3,24),dk),0,.37,.25);
- const open=1.15,shellGeo=new THREE.SphereGeometry(1,48,32,Math.PI*1.5+open,Math.PI*2-open*2,0.12,Math.PI-0.12);
- [shellW,shellIn].forEach(m=>{const s=add(new THREE.Mesh(shellGeo,m),0,1.1,.3);s.scale.set(.62,.86,.56);});
- // teal accent ring along the shell opening
- const rim=add(new THREE.Mesh(new THREE.TorusGeometry(1,.012,8,64),M(0x000000,{emissive:0x20d0c0,emissiveIntensity:2.5})),0,1.1,.07);rim.scale.set(.565,.84,1);
- add(new THREE.Mesh(new THREE.BoxGeometry(.5,.12,.5),dk),0,.78,.25);
- const sb=add(new THREE.Mesh(new THREE.BoxGeometry(.5,.85,.12),dk),0,1.25,.5);sb.rotation.x=-.18;
- const foot=add(new THREE.Mesh(new THREE.BoxGeometry(.55,.04,.35),dk),0,.5,-.45);foot.rotation.x=.35;}
+// 実機3Dモデル（Meshy生成FBX→glTF）。モデルは +Z 向き。高さ h(m) に合わせて縮尺し、床 y0 に接地
+const gltf=new GLTFLoader();
+function placeModel(url,x,y,h,rotY,y0=0){gltf.load(url,g=>{const o=g.scene;o.traverse(c=>{if(c.isMesh){c.castShadow=true;c.receiveShadow=true;}});
+ const bb=new THREE.Box3().setFromObject(o),sz=bb.getSize(new THREE.Vector3()),ct=bb.getCenter(new THREE.Vector3());const s=h/sz.y;
+ const wrap=new THREE.Group();o.position.set(-ct.x,-bb.min.y,-ct.z);wrap.add(o);wrap.scale.setScalar(s);
+ const [X,Z]=W(x,y);wrap.position.set(X,y0,Z);wrap.rotation.y=rotY;scene.add(wrap);});}
+// spaceF8 pod H1960、体験者は左（C側）向き
+placeModel('models/vr360.gltf.json',1350,4860,1.96,-Math.PI/2,.13);
 label(['VR360 シミュレータ','VR360 Simulator'],1350,4860,2.25,'k');
 
 tv(5000,1500,0,1,...IN[43],1.8,screenTex('Rally VR','43"',0));
 label(['43インチTV（壁掛け）','43" TV (wall-mounted)'],5000,1520,2.35);
-// VR motion seat 800×800×1600: black bucket seat on a black actuator base, back toward the wall TV
-{const [X,Z]=W(5000,2250);const bk=M(0x151618,{roughness:.55}),lth=M(0x222326,{roughness:.45});
- const base=mesh(new THREE.BoxGeometry(.8,.5,.8),bk);base.position.set(X,.25,Z);
- const plate=mesh(new THREE.BoxGeometry(.7,.04,.7),mat.grey);plate.position.set(X,.52,Z);
- const seat=mesh(new THREE.BoxGeometry(.52,.14,.5),lth);seat.position.set(X,.61,Z+.03);
- const back=mesh(new THREE.BoxGeometry(.52,.95,.14),lth);back.position.set(X,1.1,Z-.27);back.rotation.x=-.12;
- [-.29,.29].forEach(dx=>{const w=mesh(new THREE.BoxGeometry(.07,.75,.2),lth);w.position.set(X+dx,1.0,Z-.22);w.rotation.x=-.12;
-   const s=mesh(new THREE.BoxGeometry(.07,.16,.42),lth);s.position.set(X+dx,.7,Z+.02);});
- const head=mesh(new THREE.BoxGeometry(.3,.2,.12),lth);head.position.set(X,1.5,Z-.33);head.rotation.x=-.12; label(['公道最速体感シミュレータ','VR motion seat (rally)'],5000,2250,1.85,'k');}
+// VR motion seat 800×800×1600、背をTV側に向けて正面A向き
+placeModel('models/motionseat.gltf.json',5000,2250,1.6,0,.012);
+label(['公道最速体感シミュレータ','VR motion seat (rally)'],5000,2250,1.85,'k');
 
 // high tables Ø600
 function highTable(x,y){const [X,Z]=W(x,y);const t=mesh(new THREE.CylinderGeometry(.3,.3,.03,48),mat.white);t.position.set(X,1.05,Z);
