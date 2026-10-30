@@ -524,7 +524,8 @@ EQ.forEach(e=>{if(!e.pos)return;const d=document.createElement('div');d.classNam
   d.onclick=ev=>{ev.stopPropagation();select(e.no,true);};const o=new CSS2DObject(d);const [X,Z]=W(...e.pos);o.position.set(X,e.pin,Z);scene.add(o);pins[e.no]=d;});
 
 // ===== wired LAN drops: one per PC location, the presenter, and one inside STOCK =====
-const fMid=[(fS[0]+fB[0])/2+fw.n[0]*375,(fS[1]+fB[1])/2+fw.n[1]*375], sMid=[2565+Math.SQRT1_2*175,3365-Math.SQRT1_2*175];
+// stand drops sit near the wall edge, behind the iPads
+const fMid=[(fS[0]+fB[0])/2+fw.n[0]*250,(fS[1]+fB[1])/2+fw.n[1]*250], sMid=[2565+Math.SQRT1_2*50,3365-Math.SQRT1_2*50];
 const LAN=[
  {no:'L1',name:['F8VPS 展示台（ノートPC×2＋iPad）','F8VPS stand (2 laptops + iPad)'],ports:3,pos:fMid,tag:1.35,th:1.0,view:fw.n,d:2.6},
  {no:'L2',name:['ForumSync 展示台（ノートPC×2＋iPad）','ForumSync stand (2 laptops + iPad)'],ports:3,pos:sMid,tag:1.35,th:1.0,view:[Math.SQRT1_2,-Math.SQRT1_2],d:2.4},
