@@ -105,7 +105,7 @@ select option{background:#1b1d22;color:var(--fg)}
     <button id="t-label" aria-pressed="true" data-en="Labels" data-ja="ラベル">Labels</button>
     <button id="t-rot" aria-pressed="false" data-en="Auto-rotate" data-ja="自動回転">Auto-rotate</button>
   </div>
-  <div class="group" role="group" aria-label="Sign concept">
+  <div class="group" role="group" aria-label="Sign concept" id="sign-group" hidden>
     <label class="glab" for="sign-sel" data-en="Sign concept" data-ja="看板案">Sign concept</label><select id="sign-sel"></select>
   </div>
   <div class="group" role="group" aria-label="Language">
@@ -491,7 +491,7 @@ const SPEC={
   'Logo lantern frame: a square lantern (H1150, depth 300, top 4950) runs around the whole 6000×6000 booth and is lit from inside so it glows. The outer logo face is sloped 8° (top leaning out) to face visitors looking up; tagline on the inner faces, and the underside glows softly. Between 2.7 and 3.8 m there are only posts, and they stand only on STOCK, the F8VPS wall and the ForumSync wall — no floor posts. The post-free front corners and left side are carried as a braced truss ring.'],
  none:['','']};
 const SIGN_OPTS=[['none',['看板なし','No sign']],['frame',['④ ロゴ行燈フレーム（□囲い）','4 Logo lantern frame (square)']],['delta',['① デルタ行燈','1 Delta lantern']],['voxel',['② ボクセル・ロゴ','2 Voxel logo']],['pylon',['③ ツインパイロン','3 Twin pylons']]];
-let signKey='frame'; // the square logo frame is shown on load
+let signKey='none'; // signs are off the site for now; set to 'frame' and unhide #sign-group to bring them back
 function showSign(k){signKey=k;Object.keys(signs).forEach(s=>{signs[s].visible=s===k;signLabels[s].forEach(l=>{l.visible=s===k;l.element.style.display=s===k?'':'none';});});
  const d=document.getElementById('sign-desc');d.hidden=k==='none';d.textContent=tr(SPEC[k]);
  const sel=document.getElementById('sign-sel');if(sel)sel.value=k;
