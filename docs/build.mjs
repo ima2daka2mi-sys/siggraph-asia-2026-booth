@@ -50,14 +50,18 @@ const fmt = n => n.toLocaleString('en-US');
 const outlets = e => e.w ? e.qty : 0;
 const totalW = EQ.reduce((s, e) => s + e.w * e.qty, 0), totalOut = EQ.reduce((s, e) => s + outlets(e), 0);
 const lanPorts = LAN.reduce((s, l) => s + l.ports, 0);
+const PC = EQ.find(e => e.no === '+');
+const PC_AT = {L1: 2, L2: 2, L3: 3, L4: 3, L5: 1, L6: 1};
+if (Object.values(PC_AT).reduce((a, b) => a + b, 0) !== PC.qty) throw new Error(`PC_AT must add up to ${PC.qty} laptops`);
+const pcAt = Object.entries(PC_AT).map(([no, n]) => ({l: LAN.find(x => x.no === no), n}));
 
 // ---- plan drawing (SVG, 1 unit = 1 mm) ----
 const P = pts => pts.map(p => p.map(v => v.toFixed(0)).join(',')).join(' ');
 const rect = (x1, y1, x2, y2, cls) => `<rect class="${cls}" x="${x1}" y="${y1}" width="${x2 - x1}" height="${y2 - y1}"/>`;
-const TAG_AT = {L1: [2350, 700], L2: [3500, 3150], L9: [950, 2400]}; // tag positions when drawn together with the pins
+const TAG_AT = {L1: [2150, 1150], L2: [3500, 3150], L9: [950, 2400]}; // tag positions when drawn together with the pins
 // where a pin's label goes when the default (right of the pin) would collide: [dx, dy, text-anchor]
 const LABEL_AT = {2: [-200, 270, 'end'], 6: [-230, 0, 'end'], 8: [-230, 0, 'end'], 11: [0, -290, 'middle']};
-function plan({pins = null, label = null, lan = false, screens = false, h = '120mm'} = {}) {
+function plan({pins = null, label = null, lan = false, screens = false, pcs = false, h = '120mm'} = {}) {
   const s = [];
   s.push(rect(0, 0, 6000, 6000, 'carpet'));
   // floor areas and furniture
@@ -88,6 +92,11 @@ function plan({pins = null, label = null, lan = false, screens = false, h = '120
     if (tx !== x || ty !== y) s.push(`<line class="lead" x1="${x}" y1="${y}" x2="${tx}" y2="${ty}"/>`);
     s.push(`<rect class="landot" x="${x - 55}" y="${y - 55}" width="110" height="110"/>`);
     s.push(`<g class="lan big"><rect x="${tx - 300}" y="${ty - 190}" width="600" height="380" rx="50"/><text x="${tx}" y="${ty - 75}">${l.no}</text><text class="pt" x="${tx}" y="${ty + 90}">${l.ports} port${l.ports > 1 ? 's' : ''}</text></g>`);});
+  // laptop outlets at their LAN drops (power plan)
+  if (pcs) pcAt.forEach(({l, n}) => {const [x, y] = l.pos, [tx, ty] = pins && TAG_AT[l.no] || l.pos;
+    if (tx !== x || ty !== y) s.push(`<line class="lead" x1="${x}" y1="${y}" x2="${tx}" y2="${ty}"/>`);
+    s.push(`<rect class="pcdot" x="${x - 55}" y="${y - 55}" width="110" height="110"/>`);
+    s.push(`<g class="pc"><rect x="${tx - 330}" y="${ty - 190}" width="660" height="380" rx="50"/><text x="${tx}" y="${ty - 75}">PC ×${n}</text><text class="pt" x="${tx}" y="${ty + 90}">${fmt(n * PC.w)} W</text></g>`);});
   // wall-mounted screens drawn to width on the wall face they hang on
   if (screens) EQ.filter(e => MOUNT[e.no]).forEach(e => {const [x, y] = e.pos, [nx, ny] = MOUNT[e.no].n, w = SCREEN_W[IN[e.no]] / 2, cx = x + nx * 30, cy = y + ny * 30;
     s.push(`<line class="screen" x1="${cx - ny * w}" y1="${cy + nx * w}" x2="${cx + ny * w}" y2="${cy - nx * w}"/>`);});
@@ -139,6 +148,8 @@ tfoot td{background:#eef3f8;font-weight:700}
 .plan .lan.big rect{stroke-width:20}.plan .lan .pt{font-size:120px;font-weight:600}
 .plan .screen{stroke:#15171b;stroke-width:70;stroke-linecap:butt}
 .plan .pin.dim2 circle{fill:#6b7f95}
+.plan .pc rect{fill:#fff;stroke:#c0392b;stroke-width:16}.plan .pc text{fill:#c0392b;font-size:140px;font-weight:700;text-anchor:middle;dominant-baseline:central}.plan .pc .pt{font-size:120px}
+.plan .pcdot{fill:#c0392b}
 .plan .lead{stroke:#15171b;stroke-width:12;stroke-dasharray:30 20}
 .plan .watt{font-size:125px;font-weight:700;fill:#c0392b;dominant-baseline:central;paint-order:stroke;stroke:#fff;stroke-width:34px;stroke-linejoin:round}
 .plan .landot{fill:#ff9f1a;stroke:#15171b;stroke-width:12}
@@ -149,7 +160,7 @@ h2.cont{font-size:11pt;margin:0 0 6px;color:#1f4e79}
 .key{display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;margin-top:8px;font-size:7.8pt;line-height:1.35}
 .key span{display:flex;gap:6px;align-items:baseline}.key em{margin-left:auto;font-style:normal;font-weight:700;white-space:nowrap}
 .key .kn,.key .kl{flex:none;min-width:22px;text-align:center;border-radius:3px;font-size:7.4pt;padding:0 3px}
-.key .kn{background:#1f4e79;color:#fff}.key .kl{background:#ff9f1a;color:#15171b}
+.key .kn{background:#1f4e79;color:#fff}.key .kp{background:#fff;color:#c0392b;border:1px solid #c0392b}.key span:has(.kp) em{color:#c0392b}.key .kl{background:#ff9f1a;color:#15171b}
 .key span:has(.kn) em{color:#c0392b}
 .key .wide{grid-column:1/-1}.key .tot{border-top:1px solid #b9bec6;padding-top:3px;margin-top:2px;font-weight:700}
 footer.src{margin-top:8px;font-size:7.6pt;color:#666}
@@ -167,9 +178,9 @@ const kRow = (cls, no, text, val = '', wide = false) => `<span${wide ? ' class="
 const PLAN = {
   'floor-plan': {what: 'equipment positions', opt: {pins: () => true},
     key: () => EQ.filter(e => e.pos).map(e => kRow('kn', e.no, tx(e.name), e.qty > 1 ? `×${e.qty}` : '')).join('')},
-  'power-list': {what: 'power at each position (W)', opt: {pins: () => true, label: e => e.w ? `${fmt(e.w * e.qty)} W` : ''},
+  'power-list': {what: 'power at each position (W)', opt: {pins: () => true, pcs: true, label: e => e.w ? `${fmt(e.w * e.qty)} W` : ''},
     key: () => EQ.filter(e => e.pos).map(e => kRow('kn', e.no, tx(e.name), e.w ? `${fmt(e.w * e.qty)} W` : tx(e.wText))).join('')
-      + EQ.filter(e => !e.pos && e.w).map(e => kRow('kn', e.no, `${tx(e.name)} ×${e.qty} (${tx(e.mount).toLowerCase()}, not on the plan)`, `${fmt(e.w * e.qty)} W`, true)).join('')
+      + pcAt.map(({l, n}) => kRow('kp', 'PC', `Laptop ×${n} at ${l.no} – ${tx(l.name)}`, `${fmt(n * PC.w)} W`, true)).join('')
       + `<span class="wide tot"><b>Total</b>${fmt(totalW)} W (≈ ${(totalW / 230).toFixed(1)} A at 230 V) · ${totalOut} outlets</span>`},
   'lan-locations': {what: 'wired LAN drops and ports', opt: {pins: () => true, lan: true},
     key: () => LAN.map(l => kRow('kl', l.no, tx(l.name), ports(l.ports))).join('')
@@ -197,13 +208,14 @@ const DOCS = {
     <div class="chips"><div class="chip"><b>${fmt(totalW)} W</b><span>Total power</span></div><div class="chip"><b>≈ ${(totalW / 230).toFixed(1)} A</b><span>at 230 V</span></div>
       <div class="chip"><b>${totalOut}</b><span>Outlets</span></div></div>
     <table><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th><th class="n">W / unit</th><th class="n">Subtotal W</th><th class="n">Outlets</th><th>Mounting / location</th></tr></thead><tbody>
-      ${EQ.filter(e => e.no !== 'iP').map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td><td class="n">${e.w ? fmt(e.w) + (e.wNote ? `<small>${esc(e.wNote)}</small>` : '') : tx(e.wText)}</td><td class="n">${e.w ? fmt(e.w * e.qty) : '—'}</td><td class="n">${outlets(e) || '—'}</td><td>${tx(e.mount)}</td></tr>`).join('')}
+      ${EQ.filter(e => e.no !== 'iP').map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td><td class="n">${e.w ? fmt(e.w) + (e.wNote ? `<small>${esc(e.wNote)}</small>` : '') : tx(e.wText)}</td><td class="n">${e.w ? fmt(e.w * e.qty) : '—'}</td><td class="n">${outlets(e) || '—'}</td><td>${e === PC ? `At LAN drops ${Object.entries(PC_AT).map(([k, n]) => `${k} ×${n}`).join(', ')}` : tx(e.mount)}</td></tr>`).join('')}
     </tbody><tfoot><tr><td></td><td>Total</td><td></td><td></td><td class="n">${fmt(totalW)}</td><td class="n">${totalOut}</td><td>≈ ${(totalW / 230).toFixed(1)} A at 230 V</td></tr></tfoot></table>
     <ul class="notes"><li>Extension cords and power strips are not permitted: each location needs its own outlets (guide: one outlet per device).</li>
       <li>Power figures are catalog estimates; final values will be updated once equipment is confirmed.</li>
       <li>The VR motion seat alone draws 220 VAC 9 A; a dedicated circuit is recommended.</li>
+      <li>Laptop outlets are placed at the LAN drops of the PCs they serve (one outlet per laptop). The presenter (L7) is not among the 12 laptops; confirm whether an outlet is needed there.</li>
       <li>The VR360 Simulator alone draws 2,800 W (≈ 12.2 A at 230 V); a dedicated circuit is recommended.</li>
-      <li>The plan page shows the power at each equipment position (red, W).</li></ul>${SOURCE}`},
+      <li>The plan page shows the power at each equipment position (red, W) and the laptop outlets (PC).</li></ul>${SOURCE}`},
 
   'lan-locations': {title: 'Wired LAN Locations', planFirst: true, table: () => `
     <div class="chips"><div class="chip"><b>${LAN.length}</b><span>Drop locations</span></div><div class="chip"><b>${lanPorts}</b><span>Total ports</span></div>
