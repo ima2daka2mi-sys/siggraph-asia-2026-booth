@@ -160,45 +160,41 @@ const KEY = `<div class="key">${EQ.filter(e => e.pos).map(e => `<span><b class="
   <span class="wide tot"><b>Total</b>${fmt(totalW)} W (≈ ${(totalW / 230).toFixed(1)} A at 230 V) · ${totalOut} outlets · ${lanPorts} LAN ports</span></div>`;
 const planPage = (title, focus, first = false) => `${first ? '' : '<div class="pb"></div>'}<h2 class="cont">${title} — plan with power (W) and LAN ports</h2>${plan({focus, h: '178mm'})}${legend}${KEY}`;
 
+// each document = its table part + the shared plan page (focus: which marks are drawn large; planFirst: plan before the table)
 const DOCS = {
-  'floor-plan': {title: 'Floor Plan', body: () => `
-    ${planPage('Floor Plan', 'eq', true)}
-    <div class="pb"></div><div class="wrap">
-    <div><table><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th></tr></thead><tbody>
+  'floor-plan': {title: 'Floor Plan', focus: 'eq', planFirst: true, table: () => `
+    <table><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th></tr></thead><tbody>
       ${EQ.filter(e => e.pos).map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td></tr>`).join('')}
       <tr><td class="no" style="background:#ff9f1a">L</td><td>Wired LAN: ${LAN.length} drops / ${lanPorts} ports (see Wired LAN Locations)</td><td class="n">${lanPorts}</td></tr>
     </tbody></table>
     <ul class="notes"><li>Dimensions in mm. Walls H2700, stands H1000 (tentative).</li>
-      <li>Dashed outlines show floor-standing units (VR360 2047×1250, motion seat 800×800).</li></ul></div></div>`},
+      <li>Dashed outlines show floor-standing units (VR360 2047×1250, motion seat 800×800).</li></ul>${SOURCE}`},
 
-  'power-list': {title: 'Power List', body: () => `
+  'power-list': {title: 'Power List', focus: 'eq', table: () => `
     <div class="chips"><div class="chip"><b>${fmt(totalW)} W</b><span>Total power</span></div><div class="chip"><b>≈ ${(totalW / 230).toFixed(1)} A</b><span>at 230 V</span></div>
       <div class="chip"><b>${totalOut}</b><span>Outlets</span></div></div>
     <table><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th><th class="n">W / unit</th><th class="n">Subtotal W</th><th class="n">Outlets</th><th>Mounting / location</th></tr></thead><tbody>
-      ${EQ.filter(e => e.no !== 'iP').map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td><td class="n">${e.w ? fmt(e.w) +(e.wNote ? `<small>${esc(e.wNote)}</small>` : '') : tx(e.wText)}</td><td class="n">${e.w ? fmt(e.w * e.qty) : '—'}</td><td class="n">${outlets(e) || '—'}</td><td>${tx(e.mount)}</td></tr>`).join('')}
+      ${EQ.filter(e => e.no !== 'iP').map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td><td class="n">${e.w ? fmt(e.w) + (e.wNote ? `<small>${esc(e.wNote)}</small>` : '') : tx(e.wText)}</td><td class="n">${e.w ? fmt(e.w * e.qty) : '—'}</td><td class="n">${outlets(e) || '—'}</td><td>${tx(e.mount)}</td></tr>`).join('')}
     </tbody><tfoot><tr><td></td><td>Total</td><td></td><td></td><td class="n">${fmt(totalW)}</td><td class="n">${totalOut}</td><td>≈ ${(totalW / 230).toFixed(1)} A at 230 V</td></tr></tfoot></table>
     <ul class="notes"><li>Extension cords and power strips are not permitted: each location needs its own outlets (guide: one outlet per device).</li>
       <li>Power figures are catalog estimates; final values will be updated once equipment is confirmed.</li>
       <li>The VR motion seat alone draws 220 VAC 9 A; a dedicated circuit is recommended.</li>
-      <li>Page 2 shows each position's power (red, W) and wired LAN ports (orange).</li></ul>${SOURCE}
-    ${planPage('Power List', 'eq')}`},
+      <li>The plan page shows each position's power (red, W) and wired LAN ports (orange).</li></ul>${SOURCE}`},
 
-  'lan-locations': {title: 'Wired LAN Locations', body: () => `
-    ${planPage('Wired LAN Locations', 'lan', true)}
-    <div class="pb"></div><div class="chips"><div class="chip"><b>${LAN.length}</b><span>Drop locations</span></div><div class="chip"><b>${lanPorts}</b><span>Total ports</span></div>
+  'lan-locations': {title: 'Wired LAN Locations', focus: 'lan', planFirst: true, table: () => `
+    <div class="chips"><div class="chip"><b>${LAN.length}</b><span>Drop locations</span></div><div class="chip"><b>${lanPorts}</b><span>Total ports</span></div>
       <div class="chip"><b>${LAN.reduce((s, l) => s + (l.ipad || 0), 0)}</b><span>of which for iPads</span></div></div>
     <table><thead><tr><th>No.</th><th>Location / devices</th><th class="n">Ports</th><th>Notes</th></tr></thead><tbody>
       ${LAN.map(l => `<tr><td class="no">${l.no}</td><td>${tx(l.name)}</td><td class="n">${l.ports}</td><td>${l.ipad ? `${l.ipad} for iPad` : ''}</td></tr>`).join('')}
     </tbody><tfoot><tr><td></td><td>Total</td><td class="n">${lanPorts}</td><td></td></tr></tfoot></table>
     <ul class="notes"><li>Drop positions are approximate; route cables along walls or under tabletops near stands and tables.</li></ul>${SOURCE}`},
 
-  'equipment-spec': {title: 'Equipment Specification List', body: () => `
+  'equipment-spec': {title: 'Equipment Specification List', focus: 'eq', table: () => `
     <table class="spec"><colgroup><col style="width:22px"><col style="width:20%"><col style="width:26px"><col style="width:13%"><col style="width:9%"><col style="width:9%"><col style="width:9%"><col style="width:8%"><col></colgroup><thead><tr><th>No.</th><th>Equipment</th><th class="n">Qty</th><th>Size mm (W×D×H)</th><th class="n">Weight kg</th><th class="n">Power W</th><th>Mounting</th><th>Space</th><th>Notes</th></tr></thead><tbody>
       ${EQ.map(e => `<tr><td class="no">${e.no}</td><td>${tx(e.name)}</td><td class="n">${e.qty}</td><td>${tx(e.size)}</td><td class="n">${tx(e.kg)}</td><td class="n">${e.w ? fmt(e.w) : e.no === 'iP' ? '—' : tx(e.wText)}</td><td>${tx(e.mount)}</td><td>${e.space ? tx(e.space) : ''}</td><td>${e.note ? tx(e.note) : ''}</td></tr>`).join('')}
-    </tbody></table>${SOURCE}
-    ${planPage('Equipment Specification List', 'eq')}`},
+    </tbody></table>${SOURCE}`},
 
-  'wall-mount': {title: 'Wall-Mounted Screens', body: () => {
+  'wall-mount': {title: 'Wall-Mounted Screens', focus: 'eq', table: () => {
     const rows = EQ.filter(e => MOUNT[e.no]);
     return `<table><thead><tr><th>No.</th><th>Screen</th><th>Wall</th><th class="n">Centre height mm</th><th class="n">Top edge mm</th><th>Size mm</th><th class="n">Weight kg</th><th class="n">Power W</th></tr></thead><tbody>
       ${rows.map(e => {const m = MOUNT[e.no], hgt = {32: 402, 43: 535, 50: 623, 65: 809, 85: 1059}[IN[e.no]];
@@ -206,16 +202,20 @@ const DOCS = {
     </tbody><tfoot><tr><td></td><td>Total: ${rows.length} screens</td><td></td><td></td><td></td><td></td><td class="n">${rows.reduce((s, e) => s + +(String(en(e.kg)).match(/\d+(\.\d+)?/) || [0])[0], 0)}</td><td class="n">${fmt(rows.reduce((s, e) => s + e.w, 0))}</td></tr></tfoot></table>
     <ul class="notes"><li>Centre height is measured from the floor (carpet) to the screen centre; the top edge is approximate (screen height plus bezel).</li>
       <li>Walls are H2700; reinforcement (backing) is needed at each mounting position.</li>
-      <li>One power outlet behind each screen.</li></ul>
-${SOURCE}
-    ${planPage('Wall-Mounted Screens', 'eq')}`;}},
+      <li>One power outlet behind each screen.</li></ul>${SOURCE}`;}},
 };
 
 fs.mkdirSync(SRC, {recursive: true});
-const sheet = (k, d) => `<section class="sheet">${head(d.title, k)}${d.body()}</section>`;
+const cont = t => `<div class="pb"></div><h2 class="cont">${t} (cont.)</h2>`;
+// single document: plan page and table page, in the document's own order
+const sheet = (k, d) => `<section class="sheet">${head(d.title, k)}${d.planFirst
+  ? `${planPage(d.title, d.focus, true)}${cont(d.title)}${d.table()}`
+  : `${d.table()}${planPage(d.title, d.focus)}`}</section>`;
+// combined: the plan once (with the floor plan), then each document's table page
+const tableSheet = (k, d) => `<section class="sheet">${head(d.title, k)}${d.table()}</section>`;
 const html = (title, body) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${title}</title><style>${CSS}</style></head><body>${body}</body></html>`;
 const jobs = Object.entries(DOCS).map(([k, d]) => [k, html(d.title, sheet(k, d))]);
-jobs.push(['booth-documents-all', html('SIGGRAPH Asia 2026 FORUM8 Booth Documents', Object.entries(DOCS).map(([k, d]) => sheet(k, d)).join(''))]);
+jobs.push(['booth-documents-all', html('SIGGRAPH Asia 2026 FORUM8 Booth Documents', Object.entries(DOCS).map(([k, d]) => k === 'floor-plan' ? sheet(k, d) : tableSheet(k, d)).join(''))]);
 for (const [k, h] of jobs) {
   const src = path.join(SRC, k + '.html');
   fs.writeFileSync(src, h);
