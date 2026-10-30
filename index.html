@@ -46,7 +46,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .occl{visibility:hidden}
 .lan span{display:block;padding:2px 6px;border-radius:3px;background:#ff9f1a;color:#1b1d22;font:800 10px/14px var(--ui);letter-spacing:.03em;border:1px solid #fff3;box-shadow:0 1px 5px rgba(0,0,0,.5);white-space:nowrap;transition:transform .15s}
 .lan:hover span{transform:scale(1.1)}
-.lan.on span{background:#fff;transform:scale(1.25)}
+.lan.on span{box-shadow:0 0 0 2px #fff,0 1px 5px rgba(0,0,0,.5);transform:scale(1.2)} /* selected: stays orange, white ring */
 .lbl.dim{background:rgba(255,210,63,.92);color:#1b1d22;border-color:transparent}
 .hide-labels .lbl.dim{display:block}
 .sec{margin:10px 8px 2px;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.04em}
@@ -96,7 +96,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
   <div class="group" role="group" aria-label="Display">
     <button id="t-eq" aria-pressed="true" data-en="Equipment & power" data-ja="機材・電力">Equipment &amp; power</button>
     <button id="t-lan" aria-pressed="true" data-en="LAN" data-ja="LAN">LAN</button>
-    <button id="t-dim" aria-pressed="true" data-en="Height 2.7 m" data-ja="高さ2.7m">Height 2.7 m</button>
+    <button id="t-dim" aria-pressed="false" data-en="Height 2.7 m" data-ja="高さ2.7m">Height 2.7 m</button>
     <button id="t-label" aria-pressed="true" data-en="Labels" data-ja="ラベル">Labels</button>
     <button id="t-rot" aria-pressed="false" data-en="Auto-rotate" data-ja="自動回転">Auto-rotate</button>
   </div>
@@ -606,6 +606,7 @@ const tog=(id,fn)=>{const b=document.getElementById(id);b.onclick=()=>{const v=b
 tog('t-label',v=>stage.classList.toggle('hide-labels',!v));
 tog('t-lan',v=>showGroup(lanGroup,v));
 tog('t-dim',v=>showGroup(dimGroup,v));
+showGroup(dimGroup,false); // height markers start off
 showSign('none');
 tog('t-rot',v=>{controls.autoRotate=v;controls.autoRotateSpeed=0.8;});
 
