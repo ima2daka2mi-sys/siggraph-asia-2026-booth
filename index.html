@@ -51,6 +51,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .docs a:hover,.docs a:focus-visible{background:rgba(63,143,224,.2);outline:none}
 .docs a small{color:var(--muted);font-size:10.5px}
 .docs a.all{border-top:1px solid var(--line);margin-top:4px;padding-top:9px;font-weight:700}
+.docs .dlmsg{margin:4px 10px 6px;font-size:11px;color:#ffb4a8}
 /* numbered equipment pins (same numbering as the equipment sheet) */
 .pin{pointer-events:auto;cursor:pointer}
 .pin span{display:block;width:20px;height:20px;border-radius:50%;background:#6b3fa0;color:#fff;font:700 11px/20px var(--ui);text-align:center;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.55);transition:transform .15s,background .15s}
@@ -565,7 +566,18 @@ function applyLang(l){lang=l;try{localStorage.setItem('booth-lang',l);}catch(e){
   document.getElementById('l-en').setAttribute('aria-pressed',l==='en');document.getElementById('l-ja').setAttribute('aria-pressed',l==='ja');
   renderPanel();placePanel();}
 if(!/github\.io$/.test(location.hostname))document.querySelectorAll('#docs a').forEach(a=>{a.href='https://ima2daka2mi-sys.github.io/siggraph-asia-2026-booth/'+a.getAttribute('href');});
-{const dm=document.getElementById('docs');addEventListener('click',ev=>{if(dm.open&&!dm.contains(ev.target))dm.open=false;});addEventListener('keydown',ev=>{if(ev.key==='Escape')dm.open=false;});}
+{const dm=document.getElementById('docs');addEventListener('click',ev=>{if(dm.open&&!dm.contains(ev.target))dm.open=false;});addEventListener('keydown',ev=>{if(ev.key==='Escape')dm.open=false;});
+ // inside a claude.ai artifact plain download links do nothing: save through the viewer's downloads capability instead.
+ // Elsewhere (GitHub Pages) there is no window.claude and the links work as they are.
+ (async()=>{const dl=globalThis.claude?.use?await globalThis.claude.use('downloads').catch(()=>null):null;if(!dl)return;
+  const menu=dm.querySelector('.menu'),msg=document.createElement('p');msg.className='dlmsg';msg.hidden=true;menu.append(msg);
+  dm.querySelectorAll('a[href]').forEach(a=>{const href=a.getAttribute('href');
+   if(!/\.pdf$/i.test(href)){a.hidden=true;return;} // the artifact hosts only the PDFs
+   a.removeAttribute('target');
+   a.addEventListener('click',async ev=>{ev.preventDefault();msg.hidden=true;
+    try{const r=await fetch(href);if(!r.ok)throw {code:'unavailable'};
+     await dl.save({filename:href.split('/').pop(),data:await r.blob()});dm.open=false;}
+    catch(e){if(e?.code==='declined')return;msg.textContent=lang==='ja'?'ファイルを保存できませんでした。':'The file could not be saved.';msg.hidden=false;}});});})();}
 document.getElementById('l-en').onclick=()=>applyLang('en');document.getElementById('l-ja').onclick=()=>applyLang('ja');
 applyLang(lang);
 camera.position.set(...views.persp[0]);controls.target.set(...views.persp[1]);
