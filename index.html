@@ -404,14 +404,15 @@ function wheelSet(x2,zc,H1){
   lid.rotation.z=-.25;}
  {const [X,Z]=W(x2-200,zc);const u=mesh(new THREE.BoxGeometry(.3,.05,.36),blk);u.position.set(X,.025,Z); // pedals sit in the open bay under the top
   [-.07,.07].forEach(dz=>{const pd=mesh(new THREE.BoxGeometry(.15,.015,.08),blk);pd.position.set(X-.02,.1,Z+dz);pd.rotation.z=-.6;});}}
-// Octanorm counter W2140×D535×H1000 (A007): dark grey panels on an aluminium frame, three bays, the driver-side face left open; 100 wood top to H1100
-function drivingCounter(x1){const x2=x1+600,H1=1.1,b0=x1+32,b1=x2-33,y0=3830,y1=5968,HB=H1-.1;
- box(b0,y0,b0+20,y1,0,HB,mat.cBody);                                    // back panel
- [[y0,y0+20],[y1-20,y1]].forEach(([a,b])=>box(b0,a,b1,b,0,HB,mat.cBody)); // end panels
- [4543,5255].forEach(y=>box(b0+20,y-10,b1,y+10,0,HB,mat.cBody));         // bay dividers
- box(b0,y0,b1,y1,0,.03,mat.cBody);                                       // floor plate
- [y0+10,4543,5255,y1-10].forEach(y=>box(b1-12,y-10,b1,y+10,0,HB,mat.metal)); // front posts
- box(b1-12,y0,b1,y1,HB-.04,.04,mat.metal);                               // front top rail
+// Octanorm counter W2140×D535×H1000 (A007): three bays, the driver-side face left open; 100 wood top to H1100.
+// Everything below the top is the same light grey as the booth walls.
+function drivingCounter(x1){const x2=x1+600,H1=1.1,b0=x1+32,b1=x2-33,y0=3830,y1=5968,HB=H1-.1,g=mat.wall;
+ box(b0,y0,b0+20,y1,0,HB,g);                                            // back panel
+ [[y0,y0+20],[y1-20,y1]].forEach(([a,b])=>box(b0,a,b1,b,0,HB,g));        // end panels
+ [4543,5255].forEach(y=>box(b0+20,y-10,b1,y+10,0,HB,g));                 // bay dividers
+ box(b0,y0,b1,y1,0,.03,g);                                               // floor plate
+ [y0+10,4543,5255,y1-10].forEach(y=>box(b1-12,y-10,b1,y+10,0,HB,g));     // front posts
+ box(b1-12,y0,b1,y1,HB-.04,.04,g);                                       // front top rail
  box(x1,3799,x2,5999,HB,.1,wood);
  [4204,4947,5690].forEach(zc=>wheelSet(x2,zc,H1));
  label(['体験コーナー 3セット','Driving corner ×3'],x1+300,4900,1.7);}
