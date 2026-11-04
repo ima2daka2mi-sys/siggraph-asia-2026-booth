@@ -436,12 +436,18 @@ const steel=M(0x6b6e74,{metalness:.4,roughness:.45});
      x.drawImage(tint(img,lw,lh,NAVY),lx,ly);e.drawImage(tint(img,lw,lh,'#000000'),lx,ly);}
    ft.needsUpdate=true;et.needsUpdate=true;};
  draw(null);const img=new Image();img.onload=()=>draw(img);img.src=F8_LOGO;
- const faceM=new THREE.MeshStandardMaterial({map:ft,emissive:0xffffff,emissiveMap:et,emissiveIntensity:1.0,roughness:.55});
- for(let i=0;i<3;i++){const p1=V[i],p2=V[(i+1)%3],mid=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2];
+ const faceM=new THREE.MeshStandardMaterial({map:ft,emissive:0xffffff,emissiveMap:et,emissiveIntensity:1.6,roughness:.55});
+ // only the face toward the VR360 is a light box (lit from inside); the other two are the same print, unlit
+ const printM=new THREE.MeshStandardMaterial({map:ft,roughness:.55});
+ const faces=[0,1,2].map(i=>{const p1=V[i],p2=V[(i+1)%3],mid=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2];
    let nx=(p2[1]-p1[1]),ny=-(p2[0]-p1[0]);const l=Math.hypot(nx,ny);nx/=l;ny/=l;
    if((mid[0]-cen[0])*nx+(mid[1]-cen[1])*ny<0){nx=-nx;ny=-ny;}
-   const [X,Z]=W(...mid);const f=new THREE.Mesh(new THREE.PlaneGeometry(4.9,SIGN_H-.06),faceM);
-   f.position.set(X+nx*.004,SIGN_B+SIGN_H/2,Z+ny*.004);f.rotation.y=Math.atan2(nx,ny);signGroup.add(f);}
+   const dv=[1250-mid[0],4880-mid[1]],dl=Math.hypot(...dv);return {mid,nx,ny,toVR:(dv[0]*nx+dv[1]*ny)/dl};}); // VR360 centre (1250,4880)
+ const litFace=faces.reduce((a,b)=>b.toVR>a.toVR?b:a);
+ faces.forEach(fc=>{const [X,Z]=W(...fc.mid),lit=fc===litFace;
+   const f=new THREE.Mesh(new THREE.PlaneGeometry(4.9,SIGN_H-.06),lit?faceM:printM);
+   f.position.set(X+fc.nx*.004,SIGN_B+SIGN_H/2,Z+fc.ny*.004);f.rotation.y=Math.atan2(fc.nx,fc.ny);signGroup.add(f);
+   if(lit){const glow=new THREE.PointLight(0xf2f6ff,6,4,2);glow.position.set(X+fc.nx*.6,SIGN_B+SIGN_H/2,Z+fc.ny*.6);signGroup.add(glow);}});
  [[915,1358,150,H],[1730,3088,150,H],[2648,4005,200,H],[4641,396,200,0]].forEach(([x,y,d,from])=>{const [X,Z]=W(x,y);
    const p=new THREE.Mesh(new THREE.CylinderGeometry(d/2000,d/2000,SIGN_B-from,20),steel);p.position.set(X,(from+SIGN_B)/2,Z);p.castShadow=true;signGroup.add(p);});
  const sl=label(['サイン 正三角形 W5000×H1500（天端5000）','Sign: equilateral triangle W5000×H1500 (top 5000)'],cen[0],cen[1],5.35,'k');
