@@ -271,7 +271,7 @@ const F8_LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9EAAAE1CAYAAABQoxB
 const H=3.0;
 const U45=[Math.SQRT1_2,Math.SQRT1_2], N45=[Math.SQRT1_2,-Math.SQRT1_2]; // along the diagonal walls / toward their counter side
 const along=(p,s,o=0)=>[p[0]+U45[0]*s+N45[0]*o,p[1]+U45[1]*s+N45[1]*o];
-mat.cBody=M(0x34373c,{roughness:.6}); mat.cTop=M(0x1d5c9e,{roughness:.45});
+mat.cBody=M(0x505359,{roughness:.6}); mat.cTop=M(0x1d5c9e,{roughness:.45});
 // Octanorm counter: body (narrower, slightly shorter) under a top slab; p1,p2 on the wall face, off = centre offset from that face
 function counter(p1,p2,depth,off,h,topM,bodyM,bodyDepth,inset){const L=Math.hypot(p2[0]-p1[0],p2[1]-p1[1]),ux=(p2[0]-p1[0])/L,uy=(p2[1]-p1[1])/L;
  band([p1[0]+ux*inset,p1[1]+uy*inset],[p2[0]-ux*inset,p2[1]-uy*inset],bodyDepth,off,0,h-.06,bodyM);band(p1,p2,depth,off,h-.06,.06,topM);}
@@ -402,12 +402,17 @@ function wheelSet(x2,zc,H1){
   const sh=new THREE.Mesh(new THREE.BoxGeometry(.012,.22,.34),M(0x9aa0a8,{metalness:.5,roughness:.35}));sh.position.set(0,.11,0);lid.add(sh);
   const sc=new THREE.Mesh(new THREE.PlaneGeometry(.31,.2),new THREE.MeshStandardMaterial({map:lapTex,emissive:0xffffff,emissiveMap:lapTex,emissiveIntensity:.8}));sc.position.set(.007,.11,0);sc.rotation.y=Math.PI/2;lid.add(sc);
   lid.rotation.z=-.25;}
- {const [X,Z]=W(x2+180,zc);const u=mesh(new THREE.BoxGeometry(.3,.05,.36),blk);u.position.set(X,.025,Z);
+ {const [X,Z]=W(x2-200,zc);const u=mesh(new THREE.BoxGeometry(.3,.05,.36),blk);u.position.set(X,.025,Z); // pedals sit in the open bay under the top
   [-.07,.07].forEach(dz=>{const pd=mesh(new THREE.BoxGeometry(.15,.015,.08),blk);pd.position.set(X-.02,.1,Z+dz);pd.rotation.z=-.6;});}}
-function drivingCounter(x1){const x2=x1+600,H1=1.1;
- box(x1+32,3830,x2-33,5968,0,H1-.05,mat.cBody);
- box(x2-36,3880,x2-30,5918,.06,H1-.2,blk);   // open front (driver side)
- box(x1,3799,x2,5999,H1-.05,.05,wood);
+// Octanorm counter W2140×D535×H1000 (A007): dark grey panels on an aluminium frame, three bays, the driver-side face left open; 100 wood top to H1100
+function drivingCounter(x1){const x2=x1+600,H1=1.1,b0=x1+32,b1=x2-33,y0=3830,y1=5968,HB=H1-.1;
+ box(b0,y0,b0+20,y1,0,HB,mat.cBody);                                    // back panel
+ [[y0,y0+20],[y1-20,y1]].forEach(([a,b])=>box(b0,a,b1,b,0,HB,mat.cBody)); // end panels
+ [4543,5255].forEach(y=>box(b0+20,y-10,b1,y+10,0,HB,mat.cBody));         // bay dividers
+ box(b0,y0,b1,y1,0,.03,mat.cBody);                                       // floor plate
+ [y0+10,4543,5255,y1-10].forEach(y=>box(b1-12,y-10,b1,y+10,0,HB,mat.metal)); // front posts
+ box(b1-12,y0,b1,y1,HB-.04,.04,mat.metal);                               // front top rail
+ box(x1,3799,x2,5999,HB,.1,wood);
  [4204,4947,5690].forEach(zc=>wheelSet(x2,zc,H1));
  label(['体験コーナー 3セット','Driving corner ×3'],x1+300,4900,1.7);}
 drivingCounter(3750);drivingCounter(5050);
