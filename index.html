@@ -429,7 +429,7 @@ const steel=M(0x6b6e74,{metalness:.4,roughness:.45});
  const sh=new THREE.Shape();V.forEach((p,i)=>{const [X,Z]=W(...p);i?sh.lineTo(X,-Z):sh.moveTo(X,-Z);});
  const hole=new THREE.Path();Vi.forEach((p,i)=>{const [X,Z]=W(...p);i?hole.lineTo(X,-Z):hole.moveTo(X,-Z);});sh.holes.push(hole);
  const geo=new THREE.ExtrudeGeometry(sh,{depth:SIGN_H,bevelEnabled:false});geo.rotateX(-Math.PI/2);geo.translate(0,SIGN_B,0);
- const body=new THREE.Mesh(geo,M(0xeef0f2,{roughness:.5}));body.castShadow=true;body.receiveShadow=true;signGroup.add(body);
+ const body=new THREE.Mesh(geo,M(0x111214,{roughness:.4,metalness:.3}));body.castShadow=true;body.receiveShadow=true;signGroup.add(body); // black frame
  // lit face: white print with the FORUM8 logo in navy; the light map glows behind the white and the logo blocks it, so the logo stays crisp navy
  const NAVY='#1f3a7a';
  const mk=()=>{const c=document.createElement('canvas');c.width=3000;c.height=900;const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return [c,t];};
@@ -451,7 +451,7 @@ const steel=M(0x6b6e74,{metalness:.4,roughness:.45});
    const dv=[1250-mid[0],4880-mid[1]],dl=Math.hypot(...dv);return {mid,nx,ny,toVR:(dv[0]*nx+dv[1]*ny)/dl};}); // VR360 centre (1250,4880)
  const litFace=faces.reduce((a,b)=>b.toVR>a.toVR?b:a);
  faces.forEach(fc=>{const [X,Z]=W(...fc.mid),lit=fc===litFace;
-   const f=new THREE.Mesh(new THREE.PlaneGeometry(4.9,SIGN_H-.06),lit?faceM:printM);
+   const f=new THREE.Mesh(new THREE.PlaneGeometry(4.86,SIGN_H-.14),lit?faceM:printM); // inset 70 so the black frame shows round the face
    f.position.set(X+fc.nx*.004,SIGN_B+SIGN_H/2,Z+fc.ny*.004);f.rotation.y=Math.atan2(fc.nx,fc.ny);signGroup.add(f);
    if(lit){const glow=new THREE.PointLight(0xf2f6ff,6,4,2);glow.position.set(X+fc.nx*.6,SIGN_B+SIGN_H/2,Z+fc.ny*.6);signGroup.add(glow);}});
  [[915,1358,150,H],[1730,3088,150,H],[2648,4005,200,H],[4641,396,200,0]].forEach(([x,y,d,from])=>{const [X,Z]=W(x,y);
