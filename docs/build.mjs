@@ -14,7 +14,7 @@ const BROWSER = process.env.BROWSER || ['C:/Program Files/Google/Chrome/Applicat
 const ISSUED = process.env.ISSUED || new Date().toISOString().slice(0, 10);
 const page = fs.readFileSync(path.join(DIR, '..', 'index.html'), 'utf8');
 
-// ---- plan geometry (mm, same as index.html: x → side D, y → front A; pico drawings A004.1–A009) ----
+// ---- plan geometry (mm, same as index.html: x → side D, y → front A; booth drawings A004.1–A009) ----
 function bandPts(p1, p2, th, off = 0) {
   const [x1, y1] = p1, [x2, y2] = p2, L = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / L, uy = (y2 - y1) / L, nx = uy, ny = -ux, o1 = off - th / 2, o2 = off + th / 2;
   return {pts: [[x1 + nx * o1, y1 + ny * o1], [x2 + nx * o1, y2 + ny * o1], [x2 + nx * o2, y2 + ny * o2], [x1 + nx * o2, y1 + ny * o2]], n: [nx, ny]};
@@ -85,7 +85,7 @@ function plan({pins = null, label = null, lan = false, screens = false, pcs = fa
   // area names
   [['STOCK 3000×1500', 4500, 900], ['F8VPS', ...along(fF, 850, 950)], ['ForumSync', ...along(sF, 725, 1000)], ['DRIVING ×6', 4700, 3650]].forEach(([t, x, y]) => s.push(`<text class="name" x="${x.toFixed(0)}" y="${y.toFixed(0)}">${t}</text>`));
   s.push(`<text class="door-t" x="3575" y="1150">DOOR W850 (lockable)</text>`);
-  // sides (pico drawings: A front, B left, C back, D right)
+  // sides (booth drawings: A front, B left, C back, D right)
   s.push(`<text class="side" x="3000" y="6420">A  FRONT (aisle)</text>`, `<text class="side" x="3000" y="-260">C  BACK (aisle)</text>`,
     `<text class="side" transform="translate(6330 3000) rotate(90)">D  RIGHT (aisle)</text>`, `<text class="side" transform="translate(-330 3000) rotate(-90)">B  LEFT (aisle)</text>`);
   // overall dimensions
@@ -168,7 +168,7 @@ h2.cont{font-size:13pt;margin:0 0 6px;color:#1f4e79}
 footer.src{margin-top:10px;font-size:9pt;color:#666}
 `;
 const head = (ttl, no) => `<header><h1>${ttl}</h1>
-  <div class="meta"><b>SIGGRAPH Asia 2026 · FORUM8 Booth</b><br>Booth B37 · island 6000×6000 / pico drawings A004.1–A009 (4 Nov)<br>${no} / Issued ${ISSUED} / Draft</div></header>`;
+  <div class="meta"><b>SIGGRAPH Asia 2026 · FORUM8 Booth</b><br>Booth B37 · island 6000×6000 / booth drawings A004.1–A009 (4 Nov)<br>${no} / Issued ${ISSUED} / Draft</div></header>`;
 const SOURCE = `<footer class="src">Source: equipment spec list, 30 Oct 2026 (draft) · Booth 3D: ima2daka2mi-sys.github.io/siggraph-asia-2026-booth</footer>`;
 const legend = (o = {}) => `<div class="legend"><span><i style="background:#8a8d93"></i>Wall H3000</span><span><i style="background:#dfe3e8"></i>Counter H1010</span>
   <span><i style="background:#efe2c7"></i>Driving counter / table</span><span><i style="background:#e5efd9"></i>VR360 area</span><span><i style="background:#1f4e79"></i>Equipment no.</span>
