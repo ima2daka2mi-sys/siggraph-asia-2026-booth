@@ -279,13 +279,11 @@ const acryl=new THREE.MeshPhysicalMaterial({color:0xffffff,roughness:.05,transmi
 function catalog(x,y,nx,ny){const [X,Z]=W(x,y);const g=new THREE.Group();g.position.set(X+nx*.03,0,Z+ny*.03);g.rotation.y=Math.atan2(nx,ny);scene.add(g);
  [.95,1.3].forEach(cy=>{const c=new THREE.Mesh(new THREE.BoxGeometry(.23,.3,.05),acryl);c.position.y=cy;g.add(c);
   const p=new THREE.Mesh(new THREE.PlaneGeometry(.2,.27),M(0xf3f5f8));p.position.set(0,cy-.01,.005);g.add(p);});}
-// printed graphic panel on a wall face
-function graphic(cx,cy,nx,ny,w,h,ch,title){const c=document.createElement('canvas');c.width=Math.round(w*300);c.height=Math.round(h*300);const g=c.getContext('2d');
- const gr=g.createLinearGradient(0,0,c.width,c.height);gr.addColorStop(0,'#0f2a4a');gr.addColorStop(1,'#2f7fc8');g.fillStyle=gr;g.fillRect(0,0,c.width,c.height);
- g.strokeStyle='rgba(255,255,255,.12)';g.lineWidth=3;for(let i=0;i<18;i++){g.beginPath();g.moveTo(0,c.height*i/18);g.lineTo(c.width,c.height*(i+6)/18);g.stroke();}
- g.fillStyle='rgba(255,255,255,.9)';g.textAlign='center';g.font=`700 ${Math.round(c.width*.07)}px "Noto Sans JP",sans-serif`;g.fillText(title,c.width/2,c.height*.2);
- const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const p=mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:t,roughness:.8}),false);
- const [X,Z]=W(cx,cy);p.position.set(X+nx*.003,ch,Z+ny*.003);p.rotation.y=Math.atan2(nx,ny);}
+// printed wall graphics from the wall-design sheet (12 Nov 2026): one image per face, floor to top, on the face's outer side
+const artLoader=new THREE.TextureLoader();
+function artTex(file){const t=artLoader.load('walls/'+file+'.jpg');t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;}
+function wallArt(file,cx,cy,nx,ny,w,h=H){const p=mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:artTex(file),roughness:.8}),false);
+ const [X,Z]=W(cx,cy);p.position.set(X+nx*.004,h/2,Z+ny*.004);p.rotation.y=Math.atan2(nx,ny);return p;}
 
 // STOCK 3000×1500 (wall 50), lockable door W850×H2000 on the back (C) side
 [[3000,0,3150,50],[4000,0,6000,50],[3000,50,3050,1500],[3050,1450,5950,1500],[5950,50,6000,1450]].forEach(r=>box(...r,0,H,mat.wall));
@@ -299,15 +297,6 @@ label('STOCK 3000×1500',4500,750,3.25);
 label(['扉 W850×H2000（施錠可）','Door W850×H2000 (lockable)'],3575,0,2.3);
 tv(3000,751,-1,0,...IN[32],1.6,screenTex('Intro Video','32"',210));
 label(['紹介動画 32インチTV','Intro video 32" TV'],3000,751,2.2);
-graphic(3900,1500,0,1,1.7,2.4,1.5,'GRAPHIC');
-label(['グラフィック壁','Graphic wall'],3900,1500,2.95);
-// rally sign on the STOCK side-D face
-{const c=document.createElement('canvas');c.width=512;c.height=768;const g=c.getContext('2d');const gr=g.createLinearGradient(0,0,0,768);gr.addColorStop(0,'#0f1c3a');gr.addColorStop(1,'#09090c');g.fillStyle=gr;g.fillRect(0,0,512,768);
-  g.strokeStyle='#e63946';g.lineWidth=10;for(let i=0;i<4;i++){g.beginPath();g.moveTo(-40,520+i*40);g.lineTo(560,380+i*40);g.stroke();}
-  g.fillStyle='#fff';g.textAlign='center';g.font='900 66px "Noto Sans JP",sans-serif';g.fillText('RALLY',256,250);g.font='700 30px "Noto Sans JP",sans-serif';g.fillText('Rally sign',256,310);
-  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const p=mesh(new THREE.PlaneGeometry(1.4,2.5),new THREE.MeshStandardMaterial({map:t,roughness:.8}),false);
-  const [X,Z]=W(6002,750);p.position.set(X,1.4,Z);p.rotation.y=Math.PI/2;}
-label(['ラリーサイン','Rally sign'],6000,750,3.25);
 
 // F8VPS wall: 1700 long, 250 thick, at 45°; counter 1600×400 H1010 on the side toward C, 50" above it; 65" on the hologram side
 const fA=[121,564],fB=[1323,1766];
@@ -338,9 +327,23 @@ counter(along(sF,75),along(sF,1375),400,200,1.01,mat.cTop,mat.cBody,330,38);
  label(['43インチTV／VR360用モニター','43" TV / VR360 monitor'],2020-n[0]*500,3588-n[1]*500,2.2);}
 tv(2800,4943,1,0,...IN[85],1.7,screenTex('Presentation','85"',215));
 label(['85インチモニター','85" monitor'],3000,4943,2.45);
-graphic(2501,5006,-1,0,1.8,2.6,1.5,'VR360');
-label(['グラフィック壁','Graphic wall'],2501,5006,3.0);
 catalog(1634,2990,-U45[0],-U45[1]);catalog(2650,5944,0,1);
+
+// wall graphics, numbered as on the wall-design sheet
+{const n=N45,m=[-N45[0],-N45[1]],u=U45,v=[-U45[0],-U45[1]],c=[(fA[0]+fB[0])/2,(fA[1]+fB[1])/2];
+ wallArt('w05',c[0]+n[0]*125,c[1]+n[1]*125,...n,1.7);     // F8VPS, counter side
+ wallArt('w04',c[0]+m[0]*125,c[1]+m[1]*125,...m,1.7);     // F8VPS, hologram side
+ wallArt('w11',...fA,...v,.25);wallArt('w14',...fB,...u,.25); // F8VPS ends
+ wallArt('w07',2270,3414,...n,1.5);                         // ForumSync diagonal, counter side
+ wallArt('w02',2014.5,3582.5,...m,1.376);                   // ForumSync diagonal, VR360 side
+ wallArt('w06',1634,2990,...v,.3);                          // ForumSync, back end
+ wallArt('w09',2800,4944,1,0,2.0);                          // ForumSync straight, side D (85")
+ wallArt('w01',2501,5006.5,-1,0,1.875);                     // ForumSync straight, side B (VR360)
+ wallArt('w10',2650.5,5944,0,1,.3);                         // ForumSync, front end
+ wallArt('w08',3000,750,-1,0,1.5);                          // STOCK, side B (32")
+ wallArt('w03',4500,1500,0,1,3.0);                          // STOCK, front A (43")
+ wallArt('w12',4500,0,0,-1,3.0);                            // STOCK, back C (door)
+ wallArt('w13',6000,750,1,0,1.5);}                          // STOCK, side D
 
 // 3D hologram display (Metavania HoloSync): clear acrylic case 750×750×150 on a pole stand Ø500, faces away from the linked 65" TV
 let holoCore;
@@ -453,6 +456,11 @@ const steel=M(0x6b6e74,{metalness:.4,roughness:.45});
    const f=new THREE.Mesh(new THREE.PlaneGeometry(4.86,SIGN_H-.14),lit?faceM:printM); // inset 70 so the black frame shows round the face
    f.position.set(X+fc.nx*.004,SIGN_B+SIGN_H/2,Z+fc.ny*.004);f.rotation.y=Math.atan2(fc.nx,fc.ny);signGroup.add(f);
    if(lit){const glow=new THREE.PointLight(0xf2f6ff,6,4,2);glow.position.set(X+fc.nx*.6,SIGN_B+SIGN_H/2,Z+fc.ny*.6);signGroup.add(glow);}});
+ // inner faces, seen from inside the booth: A "Intelligent Engineering Solutions", C logo, D "Beyond Visualization. Into Simulation." (wall-design sheet)
+ const side=fc=>fc.ny>.5?'A':fc.ny<-.5?'C':'D';
+ faces.forEach((fc,i)=>{const p1=Vi[i],p2=Vi[(i+1)%3],mid=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2],L=Math.hypot(p2[0]-p1[0],p2[1]-p1[1])/1000;
+   const f=new THREE.Mesh(new THREE.PlaneGeometry(L-.14,SIGN_H-.14),new THREE.MeshStandardMaterial({map:artTex('sign-inner-'+side(fc)),roughness:.55}));
+   const [X,Z]=W(...mid);f.position.set(X-fc.nx*.004,SIGN_B+SIGN_H/2,Z-fc.ny*.004);f.rotation.y=Math.atan2(-fc.nx,-fc.ny);signGroup.add(f);});
  [[915,1358,150,H],[1730,3088,150,H],[2648,4005,200,H],[4641,396,200,0]].forEach(([x,y,d,from])=>{const [X,Z]=W(x,y);
    const p=new THREE.Mesh(new THREE.CylinderGeometry(d/2000,d/2000,SIGN_B-from,20),steel);p.position.set(X,(from+SIGN_B)/2,Z);p.castShadow=true;signGroup.add(p);});
  const sl=label(['サイン 正三角形 W5000×H1500（天端5000）','Sign: equilateral triangle W5000×H1500 (top 5000)'],cen[0],cen[1],5.35,'k');
