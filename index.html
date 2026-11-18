@@ -279,7 +279,7 @@ const acryl=new THREE.MeshPhysicalMaterial({color:0xffffff,roughness:.05,transmi
 function catalog(x,y,nx,ny){const [X,Z]=W(x,y);const g=new THREE.Group();g.position.set(X+nx*.03,0,Z+ny*.03);g.rotation.y=Math.atan2(nx,ny);scene.add(g);
  [.95,1.3].forEach(cy=>{const c=new THREE.Mesh(new THREE.BoxGeometry(.23,.3,.05),acryl);c.position.y=cy;g.add(c);
   const p=new THREE.Mesh(new THREE.PlaneGeometry(.2,.27),M(0xf3f5f8));p.position.set(0,cy-.01,.005);g.add(p);});}
-// printed wall graphics from the wall-design sheet (12 Nov 2026): one image per face, floor to top, on the face's outer side
+// printed wall graphics from the wall-design sheet (18 Nov 2026): one image per face, floor to top, on the face's outer side
 const artLoader=new THREE.TextureLoader();
 function artTex(file){const t=artLoader.load('walls/'+file+'.jpg');t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;}
 function wallArt(file,cx,cy,nx,ny,w,h=H){const p=mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:artTex(file),roughness:.8}),false);
@@ -416,6 +416,7 @@ function drivingCounter(x1){const x2=x1+600,H1=1.1,b0=x1+32,b1=x2-33,y0=3830,y1=
  [y0+10,4543,5255,y1-10].forEach(y=>box(b1-12,y-10,b1,y+10,0,HB,g));     // front posts
  box(b1-12,y0,b1,y1,HB-.04,.04,g);                                       // front top rail
  box(x1,3799,x2,5999,HB,.1,wood);
+ wallArt('w15',(b0+b1)/2,y0,0,-1,(b1-b0)/1000,HB);wallArt('w15',(b0+b1)/2,y1,0,1,(b1-b0)/1000,HB); // ⑮ end faces: white FORUM8 logo on black
  [4204,4947,5690].forEach(zc=>wheelSet(x2,zc,H1));
  label(['体験コーナー 3セット','Driving corner ×3'],x1+300,4900,1.7);}
 drivingCounter(3750);drivingCounter(5050);
